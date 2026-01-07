@@ -1,0 +1,6 @@
+.git/
+images/
+.idea/
+.DS_Store
+.cursor/
+crds/volcano-bases

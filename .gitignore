@@ -1,0 +1,8 @@
+charts/
+images/
+.idea/
+.DS_Store
+.cursor/
+allaboutproject.md
+# Snyk Security Extension - AI Rules (auto-generated)
+.cursor/rules/snyk_rules.mdc
