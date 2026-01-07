@@ -1,0 +1,462 @@
+# 1 环境描述
+
+| 系统/软件 |  版本                               |
+| --------- | ----------------------------------  |
+| 操作系统  | Rocky Linux release 9.1 (Blue Onyx) |
+| apache    | 系统自带（2.4.53）                  |
+| php       | 系统自带（8.0.20）                  |
+| Zabbix    | 7.0.X LTS                           |
+| MySQL     | mysql-community-8.0.32              |
+**rocky9自带的mariadb找不到mariadb-devel包，所以替换为mysql**
+
+## 1.1 zabbix对数据库版本要求
+```bash
+MySQL/Percona 	8.0.X
+MariaDB 	10.5.00-10.11.X 
+Added support for MariaDB versions:
+- 10.7.X since Zabbix 6.0.6;
+- 10.8.X since Zabbix 6.0.7;
+- 10.9.X and 10.10.X since Zabbix 6.0.13;
+- 10.11.X since Zabbix 6.0.15.
+Oracle 19c - 21c
+PostgreSQL	13.0-15.X
+- 2.6 since Zabbix 6.0.7;
+- 2.7 since Zabbix 6.0.8;
+- 2.8 since Zabbix 6.0.10;
+- 2.9 since Zabbix 6.0.13;
+- 2.10 since Zabbix 6.0.15.
+SQLite 	Optional 	3.3.5-3.34.X 
+```
+
+**注意**
+Zabbix 6.0.14 MariaDB最高支持到10.9.X
+Zabbix 6.0.15 MariaDB最高支持到10.11.X
++ 数据库版本不支持会有如下日志
+Unsupported DB! MariaDB version is 101102 which is higher than maximum of 101099
+
+
+# 2 安装前准备
+## 2.1 配置ISO源
+
+
+## 2.2 安装php
+```bash
+# 安装LAMP (php7+)
+yum -y install httpd php php-gd php-gettext php-devel php-embedded php-fpm php-mysqlnd php-pdo php-bcmath php-opcache php-mbstring php-xml php-common php-cli php-json php-process php-ldap
+```
+
+```bash
+# 安装依赖包
+yum -y install net-snmp-devel libxml2-devel libevent-devel curl-devel pcre-devel go libaio libtirpc net-tools 
+```
+
+## 2.3 安装MySQL
+### 2.3.1 离线方式安装
+```bash
+# 卸载低版本mysql
+yum remove mysql mariadb
+
+# 安装mysql8+
+ls mysql-community-8.0.32/
+  mysql-community-client-8.0.32-1.el9.x86_64.rpm
+  mysql-community-client-plugins-8.0.32-1.el9.x86_64.rpm
+  mysql-community-common-8.0.32-1.el9.x86_64.rpm
+  mysql-community-devel-8.0.32-1.el9.x86_64.rpm
+  mysql-community-icu-data-files-8.0.32-1.el9.x86_64.rpm
+  mysql-community-libs-8.0.32-1.el9.x86_64.rpm
+  mysql-community-server-8.0.32-1.el9.x86_64.rpm
+
+rpm -ivh mysql-community-8.0.32/*.rpm
+```
+
+### 2.3.2 在线安装
+**系统自带的mariadb版本较低**
+```bash
+# YUM安装MYSQL8+源
+rpm -ivh https://dev.mysql.com/get/mysql80-community-release-el9-1.noarch.rpm
+
+# 卸载rpm安装的mysql或mariadb
+yum remove mysql mariadb
+
+# 挂载数据盘
+步骤省略
+
+# 安装依赖
+yum install libtirpc
+
+# YUM 在线安装数据库
+yum install mysql-community-devel mysql-community-server mysql-community-client 
+```
+
+
+## 2.4 依赖包报错记录
+```bash
+configure: error: LIBXML2 library not found
+libxml2-devel
+
+configure: error: Unable to use libevent (libevent check failed)
+libevent-devel
+
+configure: error: Curl library not foun
+curl-devel
+
+configure: error: Unable to use libpcre (libpcre check failed)
+pcre-devel
+
+configure: error: Not found MySQL library
+apt install -y libmysqlclient-dev
+or
+yum install -y mariadb-devel
+
+
+# 20241203新增
+error: Failed dependencies:
+        libaio.so.1()(64bit) is needed by mysql-community-server-8.4.3-1.el9.x86_64
+        libaio.so.1(LIBAIO_0.1)(64bit) is needed by mysql-community-server-8.4.3-1.el9.x86_64
+        libaio.so.1(LIBAIO_0.4)(64bit) is needed by mysql-community-server-8.4.3-1.el9.x86_64
+        libtirpc.so.3()(64bit) is needed by mysql-community-server-8.4.3-1.el9.x86_64
+        libtirpc.so.3(TIRPC_0.3.0)(64bit) is needed by mysql-community-server-8.4.3-1.el9.x86_64
+        libtirpc.so.3(TIRPC_0.3.3)(64bit) is needed by mysql-community-server-8.4.3-1.el9.x86_64
+        net-tools is needed by mysql-community-server-8.4.3-1.el9.x86_64
+        mariadb-connector-c-config is obsoleted by mysql-community-server-8.4.3-1.el9.x86_64
+
+yum install libaio libtirpc net-tools
+yum remove mariadb-connector-c-config
+
+# rocky9 遇到无法安装mariadb-devel
+checking for the linux kernel version... unknown family (5.14.0-162.6.1.el9_1.x86_64)
+checking size of void *... 8
+checking for mysql_config... no
+checking for mariadb_config... no
+configure: error: MySQL library not found
+[root@rocky9 zabbix-7.0.0]# yum install mariadb-devel
+Last metadata expiration check: 0:23:57 ago on Sun 07 Jul 2024 11:31:47 PM CST.
+All matches were filtered out by modular filtering for argument: mariadb-devel
+Error: Unable to find a match: mariadb-devel
+
+# 要编译Zabbix web服务， 请带 --enable-webservice 
+# 只有当你想使用定时报表时，才需要安装Zabbix web服务。
+configure: error: Unable to find "go" executable in path
+yum install go
+
+# 新版系统不支持/etc/init.d/ 启动服务，推荐使用systemd
+#./zabbix_server: line 16: /etc/init.d/functions: No such file or directory
+#./zabbix_server: line 71: action: command not found
+yum install -y initscripts
+```
+
+
+# 3 安装Zabbix
+## 3.1创建zabbix用户
+```bash
+groupadd --system zabbix
+useradd --system -g zabbix -d /usr/lib/zabbix -s /sbin/nologin -c "Zabbix Monitoring System" zabbix
+```
+
+
+## 3.2 获取软件包并安装
+```bash
+# 下载zabbix安装包
+wget https://cdn.zabbix.com/zabbix/sources/stable/7.0/zabbix-7.0.X.tar.gz
+
+# 解压安装zabbix
+tar zxf zabbix-7.0.*.tar.gz 
+cd zabbix-7.0.*
+
+# 编译安装
+# parse.c:391:2: error: ‘for’ loop initial declarations are only allowed in C99 mode for(int i = ctx->ops.values_num - 1; i >= 0; i --)
+
+export CFLAGS="-std=gnu99"
+./configure --prefix=/usr/local/zabbix --enable-server --enable-agent --with-mysql --enable-ipv6 --with-net-snmp --with-libcurl --with-libxml2 --enable-webservice 
+
+make install
+
+
+**官方的补充说明**
+To configure the sources for a Zabbix server and agent, you may run something like:
+./configure --prefix=/usr/local/zabbix --enable-server --enable-agent --with-mysql --enable-ipv6 --with-net-snmp --with-libcurl --with-libxml2
+
+--with-libcurl configuration option with cURL 7.20.0 or higher is required for SMTP authentication, supported since Zabbix 3.0.0.
+--with-libcurl and --with-libxml2 configuration options are required for virtual machine monitoring, supported since Zabbix 2.2.0.
+Since version 3.4 Zabbix will always compile with the PCRE library; installing it is not optional. --with-libpcre=[DIR] only allows pointing to a specific base install directory, instead of searching through a number of common places for the libpcre files.
+
+To configure the sources for a Zabbix server (with PostgreSQL etc.), you may run:
+./configure --enable-server --with-postgresql --with-net-snmp
+
+To configure the sources for a Zabbix proxy (with SQLite etc.), you may run:
+./configure --prefix=/usr --enable-proxy --with-net-snmp --with-sqlite3 --with-ssh2
+
+To configure the sources for a Zabbix agent, you may run:
+./configure --enable-agent
+```
+
+## 3.3 Zabbix数据库配置
+```bash
+# 创建数据库数据目录
+mkdir -p /data/mysql/
+mv /var/lib/mysql/ /var/lib/mysql_bak/
+ln -s /data/mysql/ /var/lib/
+chown -R mysql:mysql /data/mysql/ /var/lib/mysql
+
+# 配置Mysql（mysql）
+vi /etc/my.cnf
+...
+# 需要额外添加配置（zabbix需求）
+[mysqld]
+# expire_logs_days=7  \\新版本已经不支持
+binlog_expire_logs_seconds=604800
+max_binlog_size=500M
+innodb_file_per_table=1
+
+# 启动数据库
+systemctl start mysqld
+systemctl enable mysqld
+
+# 首次启动密码位于日志中
+grep password /var/log/mysqld.log 
+2024-04-26T16:48:35.729173Z 6 [Note] [MY-010454] [Server] A temporary password is generated for root@localhost: 8G_keoyW;yry
+
+
+```
+
+## 3.4 导入Zabbix模板数据
+```bash
+# 登录数据库，修改密码
+mysql -uroot -p
+mysql>  ALTER user 'root'@'localhost' IDENTIFIED BY 'Zhu1241jie@qingcloud';
+Query OK, 0 rows affected (0.00 sec)
+
+# 创建数据库（MySQL和mariadb通用）
+# Zabbix Server/Proxy 完美适配 MySQL 数据库的重要前提是 MySQL 数据库的字符集必须使用 utf8（又名 utf8mb3）或 utf8mb4（分别使用 utf8_bin 和 utf8mb4_bin 排序规则）。建议全新安装时使用 utf8mb4 。
+mysql> create database zabbix character set utf8mb4 collate utf8mb4_bin; 
+mysql> create user 'zabbix'@'localhost' identified by 'Zhu88jie@qingcloud'; 
+mysql> grant all privileges on zabbix.* to 'zabbix'@'localhost'; 
+mysql> SET GLOBAL log_bin_trust_function_creators = 1;
+mysql> quit;
+
+# 导入 schema 数据库
+shell> cd zabbix-7.0.*/database/mysql/ 
+shell> mysql -uzabbix -pZhu88jie@qingcloud zabbix < schema.sql 
+# 如果是创建 Zabbix proxy 的数据库，以下两条命令便不需要再执行。 
+shell> mysql -uzabbix -pZhu88jie@qingcloud zabbix < images.sql 
+shell> mysql -uzabbix -pZhu88jie@qingcloud zabbix < data.sql
+```
+
++ zabibx7.12 with mysql-community-8.4.3
+[Z3001] connection to database 'zabbix' failed: [2045] Plugin caching_sha2_password could not be loaded lib/mariadb/
+zabbix是在mairadb的基础上安装的，后来换成mysql。   将zabbix重新安装一下即可。
+
+## 3.5 apache配置
+```bash
+# zabbix站点文件配置
+mkdir /var/www/html/zabbix
+cd /root/zabbix-7.0.*/ui/
+cp -a * /var/www/html/zabbix/
+chown -R apache:apache /var/www/html/zabbix/
+
+# php配置
+sed -i '/post_max_size/s/= 8M/= 16M/' /etc/php.ini
+sed -i 's/max_execution_time = 30/max_execution_time = 300/' /etc/php.ini
+sed -i '/max_input_time/s/= 60/= 300/' /etc/php.ini
+sed -i 's/;date.timezone =/date.timezone = Asia\/Shanghai/' /etc/php.ini
+
+# 重启apache
+systemctl enable httpd
+systemctl restart httpd
+```
+
+***官方示例：Zabbix web interface***
+```bash
+/usr/local/apache2/htdocs (default directory when installing Apache from source)
+/srv/www/htdocs (OpenSUSE, SLES)
+/var/www/html (Debian, Ubuntu, Fedora, RHEL, CentOS)
+
+mkdir <htdocs>/zabbix
+cd ui
+cp -a . <htdocs>/zabbix
+```
+
+***官方示例：PHP***
+```bash
+Minimum required size of PHP post is 16M (configuration option "post_max_size").
+Minimum required limit on execution time of PHP scripts is 300 (configuration option "max_execution_time").
+Minimum required limit on input parse time for PHP scripts is 300 (configuration option "max_input_time").
+```
+
+## 3.6 收尾工作
+### 3.6.1 zabbix服务启动脚本
+**（已废弃）采用init.d方式启动**
+```bash
+# 配置启动脚本
+cd /root/zabbix-6.0.*/misc/init.d/fedora/core/
+cp * /etc/init.d/
+sed -i "s#BASEDIR=.*#BASEDIR=/usr/local/zabbix#" /etc/init.d/zabbix_server
+sed -i "s#BASEDIR=.*#BASEDIR=/usr/local/zabbix#" /etc/init.d/zabbix_agentd
+
+# 配置服务自启动
+service zabbix_server start
+service zabbix_agentd start
+chkconfig zabbix_server on
+chkconfig zabbix_agentd on
+OR:
+```
+
+**采用systemd方式启动**
+zabbix_server服务
+```bash
+cat > /etc/systemd/system/zabbix_server.service << EOL
+[Unit]
+Description=Zabbix Server
+After=syslog.target network.target mariadb.service
+ 
+[Service]
+Type=oneshot
+User=zabbix
+ExecStart=/usr/local/zabbix/sbin/zabbix_server
+ExecReload=/usr/local/zabbix/sbin/zabbix_server -R config_cache_reload
+RemainAfterExit=yes
+PIDFile=/var/run/zabbix_server.pid
+ 
+[Install]
+WantedBy=multi-user.target
+EOL
+```
+
+zabbix_agent服务
+```bash
+cat >  /etc/systemd/system/zabbix_agent.service << EOL
+[Unit]
+Description=Zabbix Agent
+After=syslog.target network.target
+ 
+[Service]
+Type=oneshot
+User=zabbix
+ExecStart=/usr/local/zabbix/sbin/zabbix_agentd
+RemainAfterExit=yes
+PIDFile=/var/run/zabbix_agent.pid
+ 
+[Install]
+WantedBy=multi-user.target
+EOL
+```
+
+配置服务自启动
+```bash
+systemctl daemon-reload
+systemctl start zabbix_server zabbix_agent
+systemctl enable zabbix_server zabbix_agent
+```
+
+### 3.6.2 安装fping
+```bash
+# 解压fping
+tar zxf fping-5.1.tar.gz
+cd fping-5.1
+
+# 编译安装fping
+./configure --prefix=/usr/local/fping
+make && make install
+
+# 将fping软链接到/usr/sbin/
+ln -s /usr/local/fping/sbin/fping /usr/sbin/
+fping  -v
+  fping: Version 5.1
+
+或者，在zabbix_server.conf配置
+FpingLocation=/usr/sbin/fping
+
+# 修改fping的权限
+ll /usr/local/fping/sbin/fping 
+  -rwxr-xr-x. 1 root root 148768 Apr  4 00:01 /usr/local/fping/sbin/fping
+
+chown root:zabbix /usr/local/fping/sbin/fping
+chmod 4710 /usr/local/fping/sbin/fping
+
+# 如果不修改权限，icmpping监控会失败，报错为：SNMP Unavailable by ICMP ping
+```
+
+## 3.7 更新配置文件
++ zabbix_server
+```bash
+grep -E "^ProxyMode=|^Server=|^Hostname=|^DBName=|^DBPassword=|^DataSenderFrequency=|^ConfigFrequency=|^StartPollers=|^StartPollers=|^StartTrappers=|^StartPingers=|^CacheSize=|^HistoryCacheSize=|^HistoryIndexCacheSize=|^Timeout=" /usr/local/zabbix/etc/zabbix_server.conf
+
+grep -E "^# ProxyMode=|^Server=|^Hostname=|^DBName=|# DBPassword=|^# DataSenderFrequency=|^# ConfigFrequency=|^# StartPollers=|^# StartPollers=|^# StartTrappers|^# StartPingers=|^# CacheSize=|^# HistoryCacheSize=|^# HistoryIndexCacheSize=|^Timeout=" /usr/local/zabbix/etc/zabbix_server.conf
+
+HOST_NAME=`hostname`
+ZABBIX_SERVER=192.168.78.131
+ZABBIX_AGENT=/usr/local/zabbix/etc/zabbix_server.conf
+
+sed -i "s#^Server=.*#Server=${ZABBIX_SERVER}#g" /usr/local/zabbix_proxy/etc/zabbix_agentd.conf
+sed -i "s/^ServerActive=.*/ServerActive=${ZABBIX_SERVER}/g" ${ZABBIX_AGENT}
+sed -i "s/^Hostname=.*/Hostname=${HOST_NAME}/g" ${ZABBIX_AGENT}
+```
+
++ zabbix_agent
+```bash
+grep -E "^Server=|^ServerActive=|^Hostname=" /usr/local/zabbix_proxy/etc/zabbix_agentd.conf
+
+HOST_NAME=`hostname`
+ZABBIX_SERVER=192.168.78.131
+ZABBIX_AGENT=/usr/local/zabbix_proxy/etc/zabbix_proxy.conf
+
+sed -i "s#^Server=.*#Server=${ZABBIX_SERVER}#g" /usr/local/zabbix_proxy/etc/zabbix_agentd.conf
+sed -i "s/^ServerActive=.*/ServerActive=${ZABBIX_SERVER}/g" ${ZABBIX_AGENT}
+sed -i "s/^Hostname=.*/Hostname=${HOST_NAME}/g" ${ZABBIX_AGENT}
+```
+
+
+# 4 问题记录
+## 4.1 StartIPMIPollers配置报错
+```bash
+8月 15 13:41:11 bullyseye systemd[1]: Starting Zabbix Server...
+8月 15 13:41:11 bullyseye zabbix_server[2525]: zabbix_server [2525]: "StartIPMIPollers" configuration parameter cannot be used: Zabbix server was compiled without IPMI support
+
+# 编译的时候需要 添加--with-openipmi
+apt-get install libopenipmi-dev
+```
+
+## 4.2 中文乱码，可以到window系统找到自己喜欢的字体上传上去
+```bash
+# 在windows系统中的c:\windows\fonts目录中copy一个自己喜欢的字体文出来，如msyh.ttf
+# 将copy出来的字体上传到Zabbix根目录中的fonts目录下
+
+# zabbix5以前版本：
+/var/www/html/zabbix/fonts
+# zabbix6：
+/var/www/html/zabbix/assets/fonts
+
+将原来的字体文件“DejaVusSans.ttf”备份
+将上传的字体文件如msyh.ttf改名为DejaVusSans.ttf，再次刷新浏览器即可。
+```
+
+## 4.3 无法选择中文语言
+```bash
+dnf install langpacks-zh_CN glibc-common
+```
+
+# 5 snmpwalk使用
+```bash
+参数说明：
+-c  团体名
+-v  snmp 版本
+-l  认证类型
+-u  snmpv3用户
+-a  鉴权协议，默认为MD5
+-A  鉴权密码
+-x  传输加密协议
+-X  传输加密密码
+```
+
+## 5.1 snmpv2使用示例
+```bash
+snmpwalk -v 2c -c 6cL%B7vn/~hM94+Z 100.64.3.128
+snmpwalk.exe -v 2c -c ZW_bjaudit_for_zabbix 127.0.0.1
+```
+
+## 5.2 snmpv3使用示例
+```bash
+snmpwalk -v 3 -l authPriv -u admin -a SHA256 -A '&6K?rB64Pt4^dJz@' -x AES -X '6cL%B7vn/~hM94+Z' 100.64.3.218
+# 不知道为啥，&6K?rB64Pt4^dJz@ 密码必须使用单引号引住才能正常验证，而zabbix上配置该密码无法验证。怀疑是不支持某些特殊字符
+```
+

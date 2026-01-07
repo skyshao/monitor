@@ -1,0 +1,440 @@
+# 1 环境描述
+| 系统/软件 |  版本                               |
+| --------- | ----------------------------------  |
+| 操作系统  | Debian 12                           |
+| apache    | 系统自带（2.4.57）                  |
+| php       | 系统自带（8.2）                     |
+| Zabbix    | 6.0.X LTS                           |
+| MySQL     | mariadb-server_10.11.6              |
+| --------- | ----------------------------------  |
+
+## 1.1 zabbix对数据库版本要求
+```bash
+MySQL/Percona 	8.0.X
+MariaDB 	10.5.00-10.11.X 
+Added support for MariaDB versions:
+- 10.7.X since Zabbix 6.0.6;
+- 10.8.X since Zabbix 6.0.7;
+- 10.9.X and 10.10.X since Zabbix 6.0.13;
+- 10.11.X since Zabbix 6.0.15.
+Oracle 19c - 21c
+PostgreSQL	13.0-15.X
+- 2.6 since Zabbix 6.0.7;
+- 2.7 since Zabbix 6.0.8;
+- 2.8 since Zabbix 6.0.10;
+- 2.9 since Zabbix 6.0.13;
+- 2.10 since Zabbix 6.0.15.
+SQLite 	Optional 	3.3.5-3.34.X 
+```
+
+**注意**
+Zabbix 6.0.14 MariaDB最高支持到10.9.X
+Zabbix 6.0.15 MariaDB最高支持到10.11.X
++ 数据库版本不支持会有如下日志
+Unsupported DB! MariaDB version is 101102 which is higher than maximum of 101099
+
+
+# 2 安装前准备
+**以下操作是基于dibian 11.9/12.5**
+
+## 2.1 安装主要依赖包
++ 配置源（iso）
+```bash
+# Debian 11
+deb [trusted=yes] file:///media/cdrom/ bullseye contrib main
+
+# Debian 12
+deb [trusted=yes] file:///media/cdrom/ bookworm main non-free-firmware
+```
+
++ 升级系统（通过iso升级至最新系统 11.9 或 12.5 ）
+```bash
+apt-get update
+
+apt-get full-upgrade
+```
+
++ 安装开发工具
+```bash
+apt-get -y install build-essential
+```
+
++ 主依赖包（通过iso安装）
+**Debian11**
+```bash
+# 安装主依赖包
+apt-get -y install apache2 libssl-dev libbz2-dev libxml2-dev libjpeg-dev libpng-dev libfreetype6-dev libpcre3-dev mariadb-server pkg-config
+# php7.4
+apt-get -y install php-mysql php-curl php-gd php-mbstring php-xml libapache2-mod-php
+```
+
+**Debian12**
+```bash
+# 安装主依赖包
+apt-get -y install apache2 libssl-dev libxml2-dev libjpeg-dev libpng-dev mariadb-server pkg-config
+# php8.2
+apt-get -y install php-mbstring php-xml
+```
+
+## 2.2 其他依赖包
+**通过互联网安装**
+```bash
+# Debian 11
+apt-get -y install apache2-dev libxslt1-dev libcurl4-gnutls-dev libevent-dev libxpm-dev
+apt-get -y install php-fpm php-bcmath php-ldap php-sqlite3
+apt-get -y install libmariadb-dev libsnmp-dev golang
+
+# Debian 12
+apt-get -y install libbz2-dev libfreetype6-dev libpcre3-dev php-mysql php-curl php-gd libapache2-mod-php libevent-dev libcurl4-openssl-dev php-bcmath php-ldap
+apt-get -y install libmariadb-dev libsnmp-dev 
+```
+
+**离线缓存安装**
+```bash
+# 已经缓存 online 部分依赖包，直接解压安装全部即可。
+sky\【02】DOC\【02】LEARNING\Monitor\Zabbix\Scripts\offline\
+
+cd debianX_packages_for_zabbix_server
+dpkg -i 01_XXXX/*.deb
+dpkg -i 02_XXXX/*.deb
+```
+
+
+# 3 安装Zabbix
+## 3.1 创建zabbix用户
+```bash
+addgroup --system --quiet zabbix 
+adduser --quiet --system --disabled-login --ingroup zabbix --home /var/lib/zabbix --no-create-home zabbix
+```
+
+## 3.2 获取软件包并安装
+```bash
+# 下载zabbix安装包
+wget https://cdn.zabbix.com/zabbix/sources/stable/6.0/zabbix-6.0.X.tar.gz
+
+# 解压安装zabbix
+tar zxvf zabbix-6.0.*.tar.gz 
+cd zabbix-6.0.*/
+
+# 编译安装
+export CFLAGS="-std=gnu99"
+./configure --prefix=/usr/local/zabbix --enable-server --enable-agent --with-mysql --enable-ipv6 --with-net-snmp --with-libcurl --with-libxml2
+# ./configure --prefix=/usr/local/zabbix --enable-server --enable-agent --with-mysql --enable-ipv6 --with-net-snmp --with-libcurl --with-libxml2 --enable-webservice
+make install
+```
+
+## 3.3 zabbix数据库配置
+```bash
+# 创建数据库数据目录
+systemctl stop mariadb
+mv /var/lib/mysql/ /var/lib/mysql_bak/
+mkdir -p /data/mysql/
+ln -s /data/mysql/ /var/lib/
+chown -R mysql:mysql /data/mysql/
+
+# 配置Mysql（mariadb）
+vi /etc/mysql/my.cnf
+...
+# 需要额外添加配置（zabbix需求）
+[mysqld]
+expire_logs_days=7
+max_binlog_size=500M
+innodb_file_per_table=1
+
+# 启动数据库
+systemctl start mariadb
+systemctl enable mariadb
+
+# 如果无法启动可尝试重置数据库
+rm -rf /var/lib/mysql/*
+mysql_install_db
+chown -R mysql:mysql /var/lib/mysql/*
+systemctl start mysqld
+```
+
+## 3.4 导入Zabbix模板数据
+```bash
+# 登录数据库，修改密码
+mysql -uroot -p
+mysql>  ALTER user 'root'@'localhost' IDENTIFIED BY 'Zhu1241jie@qingcloud';
+Query OK, 0 rows affected (0.00 sec)
+
+# 创建数据库（MySQL和mariadb通用）
+# Zabbix Server/Proxy 完美适配 MySQL 数据库的重要前提是 MySQL 数据库的字符集必须使用 utf8（又名 utf8mb3）或 utf8mb4（分别使用 utf8_bin 和 utf8mb4_bin 排序规则）。建议全新安装时使用 utf8mb4 。
+mysql> create database zabbix character set utf8mb4 collate utf8mb4_bin; 
+mysql> create user 'zabbix'@'localhost' identified by 'Zhu88jie@qingcloud'; 
+mysql> grant all privileges on zabbix.* to 'zabbix'@'localhost'; 
+mysql> SET GLOBAL log_bin_trust_function_creators = 1;
+mysql> quit;
+
+grant all privileges on zabbix.* to zabbix@localhost identified by 'Zhu88jie@qingcloud'; 
+
+# 导入 schema 数据库
+shell> cd zabbix-6.0.*/database/mysql 
+shell> mysql -uzabbix -pZhu88jie@qingcloud zabbix < schema.sql 
+# 如果是创建 Zabbix proxy 的数据库，以下两条命令便不需要再执行。 
+shell> mysql -uzabbix -pZhu88jie@qingcloud zabbix < images.sql 
+shell> mysql -uzabbix -pZhu88jie@qingcloud zabbix < data.sql
+```
+
+## 3.5 apache配置
+```bash
+# zabbix站点文件配置
+cd zabbix-6.0.*/ui/
+
+mkdir /var/www/html/zabbix
+cp -a * /var/www/html/zabbix/
+chown -R www-data:www-data /var/www/html/zabbix/
+
+# php7.4 (debian11)
+sed -i '/post_max_size/s/= 8M/= 16M/' /etc/php/7.4/apache2/php.ini
+sed -i 's/max_execution_time = 30/max_execution_time = 300/' /etc/php/7.4/apache2/php.ini
+sed -i '/max_input_time/s/= 60/= 300/' /etc/php/7.4/apache2/php.ini
+sed -i 's/;date.timezone =/date.timezone = Asia\/Shanghai/' /etc/php/7.4/apache2/php.ini
+
+# php8.2 (debian12)
+sed -i '/post_max_size/s/= 8M/= 16M/' /etc/php/8.2/apache2/php.ini
+sed -i 's/max_execution_time = 30/max_execution_time = 300/' /etc/php/8.2/apache2/php.ini
+sed -i '/max_input_time/s/= 60/= 300/' /etc/php/8.2/apache2/php.ini
+sed -i 's/;date.timezone =/date.timezone = Asia\/Shanghai/' /etc/php/8.2/apache2/php.ini
+
+# 浏览器乱码，提示：Locale for language "en_US" is not found on the web 
+sed -i 's/^# *\(en_US.UTF-8\)/\1/' /etc/locale.gen && locale-gen
+
+# 重启apache
+systemctl restart apache2
+systemctl enable apache2
+```
+
+***官方示例：Zabbix web interface***
+```bash
+/usr/local/apache2/htdocs (default directory when installing Apache from source)
+/srv/www/htdocs (OpenSUSE, SLES)
+/var/www/html (Debian, Ubuntu, Fedora, RHEL, CentOS)
+
+mkdir <htdocs>/zabbix
+cd ui
+cp -a . <htdocs>/zabbix
+```
+
+***官方示例：PHP***
+```bash
+Minimum required size of PHP post is 16M (configuration option "post_max_size").
+Minimum required limit on execution time of PHP scripts is 300 (configuration option "max_execution_time").
+Minimum required limit on input parse time for PHP scripts is 300 (configuration option "max_input_time").
+```
+
+## 3.6 收尾工作
+### 3.6.1 zabbix服务启动脚本
+**采用init.d方式启动**
+```bash
+# 配置启动脚本
+cd zabbix-6.0.*/misc/init.d/fedora/core/
+
+cp * /etc/init.d/
+sed -i "s#BASEDIR=.*#BASEDIR=/usr/local/zabbix#" /etc/init.d/zabbix_server
+sed -i "s#BASEDIR=.*#BASEDIR=/usr/local/zabbix#" /etc/init.d/zabbix_agentd
+
+# 配置服务自启动
+service zabbix_server start
+service zabbix_agentd start
+chkconfig zabbix_server on
+chkconfig zabbix_agentd on
+```
+
+**采用systemd方式启动**
+zabbix_server服务
+```bash
+cat > /etc/systemd/system/zabbix_server.service << EOL
+[Unit]
+Description=Zabbix Server
+After=syslog.target network.target mariadb.service
+ 
+[Service]
+Type=oneshot
+User=zabbix
+ExecStart=/usr/local/zabbix/sbin/zabbix_server
+ExecReload=/usr/local/zabbix/sbin/zabbix_server -R config_cache_reload
+RemainAfterExit=yes
+PIDFile=/var/run/zabbix_server.pid
+ 
+[Install]
+WantedBy=multi-user.target
+EOL
+```
+
+zabbix_agent服务
+```bash
+cat >  /etc/systemd/system/zabbix_agentd.service << EOL
+[Unit]
+Description=Zabbix Agent
+After=syslog.target network.target
+ 
+[Service]
+Type=oneshot
+User=zabbix
+ExecStart=/usr/local/zabbix/sbin/zabbix_agentd
+RemainAfterExit=yes
+PIDFile=/var/run/zabbix_agentd.pid
+ 
+[Install]
+WantedBy=multi-user.target
+EOL
+```
+
+配置服务自启动
+```bash
+systemctl daemon-reload
+systemctl start zabbix_server
+systemctl start zabbix_agentd
+systemctl enable zabbix_server
+systemctl enable zabbix_agentd
+```
+
+### 3.6.2 安装fping
+```bash
+# 解压fping
+tar zxf fping-5.1.tar.gz
+cd fping-5.1
+
+# 编译安装fping
+./configure --prefix=/usr/local/fping
+make && make install
+
+# 将fping软链接到/usr/sbin/
+ln -s /usr/local/fping/sbin/fping /usr/sbin/
+fping  -v
+  fping: Version 5.1
+
+或者，在zabbix_server.conf配置
+FpingLocation=/usr/sbin/fping
+
+# 修改fping的权限
+ll /usr/local/fping/sbin/fping 
+  -rwxr-xr-x. 1 root root 148768 Apr  4 00:01 /usr/local/fping/sbin/fping
+
+chown root:zabbix /usr/local/fping/sbin/fping
+chmod 4710 /usr/local/fping/sbin/fping
+
+# 如果不修改权限，icmpping监控会失败，报错为：SNMP Unavailable by ICMP ping
+```
+
+
+## 3.7 更新配置文件
++ zabbix_server
+grep -E "^DBName=|^# DBPassword=|^# StartPollers=|# StartIPMIPollers=|^# StartPollersUnreachable=|^# StartHistoryPollers=|^# StartTrappers=|^# StartPingers=|^# StartSNMPTrapper=|^# CacheSize=|^# HistoryCacheSize=|^# HistoryIndexCacheSize=|^# TrendCacheSize=|^# ValueCacheSize=|^Timeout=" /usr/local/zabbix/etc/zabbix_server.conf
+
+sed -i "s/^# DBPassword=.*/DBPassword=Zhu88jie@qingcloud/g" /usr/local/zabbix/etc/zabbix_server.conf
+sed -i "s/^# StartPollers=.*/StartPollers=20/g" /usr/local/zabbix/etc/zabbix_server.conf
+sed -i "s/^# StartPollersUnreachable=.*/StartPollersUnreachable=5/g" /usr/local/zabbix/etc/zabbix_server.conf
+sed -i "s/^# StartHistoryPollers=.*/StartHistoryPollers=10/g" /usr/local/zabbix/etc/zabbix_server.conf
+sed -i "s/^# StartTrappers=.*/StartTrappers=20/g" /usr/local/zabbix/etc/zabbix_server.conf
+sed -i "s/^# StartPingers=.*/StartPingers=2/g" /usr/local/zabbix/etc/zabbix_server.conf
+sed -i "s/^# CacheSize=.*/CacheSize=1024M/g" /usr/local/zabbix/etc/zabbix_server.conf
+sed -i "s/^# HistoryCacheSize=.*/HistoryCacheSize=1024M/g" /usr/local/zabbix/etc/zabbix_server.conf
+sed -i "s/^# HistoryIndexCacheSize=.*/HistoryIndexCacheSize=512M/g" /usr/local/zabbix/etc/zabbix_server.conf
+sed -i "s/^# TrendCacheSize=.*/TrendCacheSize=1024M/g" /usr/local/zabbix/etc/zabbix_server.conf
+sed -i "s/^# ValueCacheSize=.*/ValueCacheSize=1024M/g" /usr/local/zabbix/etc/zabbix_server.conf
+sed -i "s/^Timeout=.*/Timeout=10/g" /usr/local/zabbix/etc/zabbix_server.conf
+
+grep -E "^DBName=|^DBPassword=|^StartPollers=|# StartIPMIPollers=|^StartPollersUnreachable=|^StartHistoryPollers=|^StartTrappers=|^StartPingers=|^StartSNMPTrapper=|^CacheSize=|^HistoryCacheSize=|^HistoryIndexCacheSize=|^TrendCacheSize=|^ValueCacheSize=|^Timeout=" /usr/local/zabbix/etc/zabbix_server.conf
+```
+
++ zabbix_agent
+```bash
+grep -E "^Server=|^ServerActive=|^Hostname=" /usr/local/zabbix/etc/zabbix_agentd.conf
+
+HOST_NAME=`hostname`
+sed -i "s/^Hostname=.*/Hostname=${HOST_NAME}/g" /usr/local/zabbix/etc/zabbix_agentd.conf
+
+# 指定监控server
+ZABBIX_SERVER=192.168.78.131
+sed -i "s#^Server=.*#Server=${ZABBIX_SERVER}#g" /usr/local/zabbix/etc/zabbix_agentd.conf
+sed -i "s/^ServerActive=.*/ServerActive=${ZABBIX_SERVER}/g" /usr/local/zabbix/etc/zabbix_agentd.conf
+
+grep -E "^Server=|^ServerActive=|^Hostname=" /usr/local/zabbix/etc/zabbix_agentd.conf
+```
+
++ 重启服务
+```bash
+systemctl restart zabbix_server
+systemctl restart zabbix_agentd
+```
+
+
+# 4 问题记录
+## 4.1 StartIPMIPollers配置报错
+```bash
+8月 15 13:41:11 bullyseye systemd[1]: Starting Zabbix Server...
+8月 15 13:41:11 bullyseye zabbix_server[2525]: zabbix_server [2525]: "StartIPMIPollers" configuration parameter cannot be used: Zabbix server was compiled without IPMI support
+
+# 编译的时候需要 添加--with-openipmi
+apt-get install libopenipmi-dev
+```
+
+## 4.2 中文乱码，可以到window系统找到自己喜欢的字体上传上去
+```bash
+# 在windows系统中的c:\windows\fonts目录中copy一个自己喜欢的字体文出来，如msyh.ttf
+# 将copy出来的字体上传到Zabbix根目录中的fonts目录下
+
+# zabbix5以前版本：
+/var/www/html/zabbix/fonts
+# zabbix6：
+/var/www/html/zabbix/assets/fonts
+
+将原来的字体文件“DejaVusSans.ttf”备份
+将上传的字体文件如msyh.ttf改名为DejaVusSans.ttf，再次刷新浏览器即可。
+```
+
+## 4.3 无法选择中文语言
+```bash
+参考：sky\【02】DOC\【01】MY DOC\【01】我的文档\linux 修改字符集、支持中文（LANGUAGE locale）.txt
+dpkg-reconfigure locales
+
+```
+
+## 4.4 LIBXML2 library not found
+```bash
+# 排查
+apt-get install libxml-dev
+
+# 还是报错，于是检查 config.log
+...
+configure:10613: checking for multirow insert statements
+configure:10619: result: yes
+configure:10699: checking for pkg-config
+configure:10737: result: no
+configure:10870: checking for pkg-config
+configure:10908: result: no
+configure:11118: error: LIBXML2 library not found
+
+# libxml2-dev的检查依赖pkg-config，于是
+apt-get install pkg-config
+```
+
+
+# 5 snmpwalk使用
+```bash
+参数说明：
+-c  团体名
+-v  snmp 版本
+-l  认证类型
+-u  snmpv3用户
+-a  鉴权协议，默认为MD5
+-A  鉴权密码
+-x  传输加密协议
+-X  传输加密密码
+```
+
+## 5.1 snmpv2使用示例
+```bash
+snmpwalk -v 2c -c 6cL%B7vn/~hM94+Z 100.64.3.128
+snmpwalk.exe -v 2c -c ZW_bjaudit_for_zabbix 127.0.0.1
+```
+
+## 5.2 snmpv3使用示例
+```bash
+snmpwalk -v 3 -l authPriv -u admin -a SHA256 -A '&6K?rB64Pt4^dJz@' -x AES -X '6cL%B7vn/~hM94+Z' 100.64.3.218
+# 不知道为啥，&6K?rB64Pt4^dJz@ 密码必须使用单引号引住才能正常验证，而zabbix上配置该密码无法验证。怀疑是不支持某些特殊字符
+```
+

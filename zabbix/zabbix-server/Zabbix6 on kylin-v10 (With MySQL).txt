@@ -1,0 +1,407 @@
+
+系统：Kylin Linux Advanced Server release V10 (Sword)
+Zabbix 6.0 LTS
+当前版本：6.0.14
+
+
+# 数据库版本
+MySQL/Percona 	8.0.X
+MariaDB 	10.5.00-10.11.X 
+Added support for MariaDB versions:
+- 10.7.X since Zabbix 6.0.6;
+- 10.8.X since Zabbix 6.0.7;
+- 10.9.X and 10.10.X since Zabbix 6.0.13;
+- 10.11.X since Zabbix 6.0.15.
+Oracle 19c - 21c
+PostgreSQL	13.0-15.X
+- 2.6 since Zabbix 6.0.7;
+- 2.7 since Zabbix 6.0.8;
+- 2.8 since Zabbix 6.0.10;
+- 2.9 since Zabbix 6.0.13;
+- 2.10 since Zabbix 6.0.15.
+SQLite 	Optional 	3.3.5-3.34.X 
+
+
+注意：
+Zabbix 6.0.14 MariaDB最高支持到10.9.X
+Zabbix 6.0.15 MariaDB最高支持到10.11.X
+# 数据库版本不支持会有如下日志
+Unsupported DB! MariaDB version is 101102 which is higher than maximum of 101099
+
+
+# 配置YUM源
+ vi /etc/yum.repos.d/kylin_aarch64.repo 
+
+###Kylin Linux Advanced Server 10 - os repo###
+  
+[ks10-adv-os]
+name = Kylin Linux Advanced Server 10 - Os
+#baseurl = http://update.cs2c.com.cn:8080/NS/V10/V10SP2/os/adv/lic/base/$basearch/
+baseurl=http://100.64.99.5/repos/kylin/kylin-v10/aarch64/ks10-adv-os_aarch64/
+gpgcheck = 1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-kylin
+enabled = 1
+
+[ks10-adv-updates]
+name = Kylin Linux Advanced Server 10 - Updates
+#baseurl = http://update.cs2c.com.cn:8080/NS/V10/V10SP2/os/adv/lic/updates/$basearch/
+baseurl=http://100.64.99.5/repos/kylin/kylin-v10/aarch64/ks10-adv-updates_aarch64/
+gpgcheck = 1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-kylin
+enabled = 1
+
+[ks10-adv-addons]
+name = Kylin Linux Advanced Server 10 - Addons
+baseurl = http://update.cs2c.com.cn:8080/NS/V10/V10SP2/os/adv/lic/addons/$basearch/
+gpgcheck = 1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-kylin
+enabled = 0
+
+
+
+# 安装LAMP (php7+)
+yum -y install httpd php php-gd php-gettext php-devel php-embedded php-fpm php-mysqlnd php-pdo php-bcmath php-opcache php-mbstring php-xml php-common php-cli php-json php-process php-ldap
+
+
+# 安装依赖包
+yum -y install net-snmp-devel libevent-devel curl-devel pcre-devel go
+
+# 依赖包报错记录
+------------------------------------------------------------------------
+configure: error: LIBXML2 library not found
+ libxml2-devel
+
+configure: error: Unable to use libevent (libevent check failed)
+libevent-devel
+
+configure: error: Curl library not foun
+curl-devel
+
+configure: error: Unable to use libpcre (libpcre check failed)
+pcre-devel
+
+configure: error: Not found MySQL library
+apt install -y libmysqlclient-dev
+or
+yum install -y mariadb-devel
+
+# 要编译Zabbix web服务， 请带 --enable-webservice 
+# 只有当你想使用定时报表时，才需要安装Zabbix web服务。
+configure: error: Unable to find "go" executable in path
+yum install go
+------------------------------------------------------------------------
+
+# 源码安装MYSQL8+
+登录官网下载；https://dev.mysql.com/downloads/mysql/
+mysql-8.0.32-linux-glibc2.17-aarch64.tar.gz
+
+# 卸载rpm安装的mysql或mariadb
+yum remove mysql mariadb
+
+# 挂载数据盘
+步骤省略
+
+# 安装依赖
+yum -y install cmake ncurses-devel libaio
+
+# 创建MYSQL用户
+groupadd mysql
+useradd -r -g mysql -s /bin/false mysql
+
+# 安装数据库
+cd ..
+tar zxf mysql-8.0.32-linux-glibc2.17-aarch64.tar.gz
+mv mysql-8.0.32-linux-glibc2.17-aarch64 /usr/local/mysql
+
+# 创建数据库数据目录
+mkdir -p /data/mysql/
+# 创建日志文件
+touch /var/log/mysql.log
+chown -R mysql:mysql /var/log/mysql.log /usr/local/mysql/ /data/mysql/
+
+# 初始化数据库
+/usr/local/mysql/bin/mysqld --initialize --user=mysql --basedir=/usr/local/mysql --datadir=/data/mysql
+# 重新初始化，需要将dabadir里的数据删除，再次执行初始化数据库的命令即可。
+# 注意产生的日志，最后一行有生成的临时密码
+# 2023-03-28T01:42:12.987100Z 6 [Note] [MY-010454] [Server] A temporary password is generated for root@localhost: Mu3n+FyDF:ps
+
+# 配置Mysql
+# 修改my.cnf文件
+# scoket好像不能修改，否则mysql登录的时候会提示
+# ERROR 2002 (HY000): Can't connect to local MySQL server through socket '/tmp/mysql.sock' (2)
+vi /etc/my.cnf
+[mysqld]
+basedir = /usr/local/mysql
+datadir = /data/mysql
+port = 3306
+socket = /tmp/mysql.sock
+log-error = /var/log/mysql.log
+sql_mode = NO_ENGINE_SUBSTITUTION,STRICT_TRANS_TABLES
+
+# 需要额外添加配置（zabbix需求）
+innodb_file_per_table=1
+
+# mysql的服务脚本放到系统服务中
+cp /usr/local/mysql/support-files/mysql.server /etc/init.d/
+
+# 启动数据库
+service mysql.server start   
+
+# 添加mysql系统相关配置
+vi /etc/profile
+...
+PATH=$PATH:/usr/local/mysql/bin
+
+source /etc/profile
+
+vi /etc/ld.so.conf.d/mysql.conf
+/usr/local/mysql/lib/
+
+ldconfig -v
+
+
+## zabbix 相关
+# 登录数据库，修改密码
+---------------------------------------------------------------------------------
+mysql -uroot -p
+mysql>  ALTER user 'root'@'localhost' IDENTIFIED BY 'Zhu1241jie@capinfo';
+Query OK, 0 rows affected (0.00 sec)
+
+# 创建数据库（MySQL和mariadb通用）
+# Zabbix Server/Proxy 完美适配 MySQL 数据库的重要前提是 MySQL 数据库的字符集必须使用 utf8（又名 utf8mb3）或 utf8mb4（分别使用 utf8_bin 和 utf8mb4_bin 排序规则）。建议全新安装时使用 utf8mb4 。
+
+mysql> create database zabbix character set utf8mb4 collate utf8mb4_bin; 
+mysql> create user 'zabbix'@'localhost' identified by 'Zhu88jie@capinfo'; 
+mysql> grant all privileges on zabbix.* to 'zabbix'@'localhost'; 
+mysql> SET GLOBAL log_bin_trust_function_creators = 1;
+mysql> quit;
+
+
+# 安装Zabbix
+groupadd --system zabbix
+useradd --system -g zabbix -d /usr/lib/zabbix -s /sbin/nologin -c "Zabbix Monitoring System" zabbix
+
+tar zxf zabbix-6.0.*.tar.gz 
+cd zabbix-6.0.*
+
+
+# 导入数据
+shell> cd database/mysql 
+shell> mysql -uzabbix -pZhu88jie@capinfo zabbix < schema.sql 
+# 如果是创建 Zabbix proxy 的数据库，以下两条命令便不需要再执行。 
+shell> mysql -uzabbix -pZhu88jie@capinfo zabbix < images.sql 
+shell> mysql -uzabbix -pZhu88jie@capinfo zabbix < data.sql
+
+
+## configure
+parse.c:391:2: error: ‘for’ loop initial declarations are only allowed in C99 mode for(int i = ctx->ops.values_num - 1; i >= 0; i --)
+export CFLAGS="-std=gnu99"
+./configure --prefix=/usr/local/zabbix --enable-server --enable-agent --with-mysql --enable-ipv6 --with-net-snmp --with-libcurl --with-libxml2 --enable-webservice 
+
+===================================================================================
+To configure the sources for a Zabbix server and agent, you may run something like:
+./configure --prefix=/usr/local/zabbix --enable-server --enable-agent --with-mysql --enable-ipv6 --with-net-snmp --with-libcurl --with-libxml2
+
+--with-libcurl configuration option with cURL 7.20.0 or higher is required for SMTP authentication, supported since Zabbix 3.0.0.
+--with-libcurl and --with-libxml2 configuration options are required for virtual machine monitoring, supported since Zabbix 2.2.0.
+Since version 3.4 Zabbix will always compile with the PCRE library; installing it is not optional. --with-libpcre=[DIR] only allows pointing to a specific base install directory, instead of searching through a number of common places for the libpcre files.
+
+To configure the sources for a Zabbix server (with PostgreSQL etc.), you may run:
+./configure --enable-server --with-postgresql --with-net-snmp
+
+To configure the sources for a Zabbix proxy (with SQLite etc.), you may run:
+./configure --prefix=/usr --enable-proxy --with-net-snmp --with-sqlite3 --with-ssh2
+
+To configure the sources for a Zabbix agent, you may run:
+./configure --enable-agent
+
+===================================================================================
+# 安装
+make install
+
+
+# 安装 Zabbix web interface
+===================================================================================
+/usr/local/apache2/htdocs (default directory when installing Apache from source)
+/srv/www/htdocs (OpenSUSE, SLES)
+/var/www/html (Debian, Ubuntu, Fedora, RHEL, CentOS)
+
+mkdir <htdocs>/zabbix
+cd ui
+cp -a . <htdocs>/zabbix
+====================================================================================
+## 以centos8为例：
+mkdir /var/www/html/zabbix
+cd ui/
+cp -a . /var/www/html/zabbix/
+
+# 配置Zabbix URL: http://<server_ip_or_name>/zabbix
+# Check of pre-requisites
+Minimum required size of PHP post is 16M (configuration option "post_max_size").
+Minimum required limit on execution time of PHP scripts is 300 (configuration option "max_execution_time").
+Minimum required limit on input parse time for PHP scripts is 300 (configuration option "max_input_time").
+
+vi /etc/php.ini
+post_max_size = 16M
+max_execution_time = 300
+max_input_time = 300
+date.timezone = Asia/Shanghai
+
+# sed 直接替换
+sed -i "s#^post_max_size.*#post_max_size = 16M#g" /etc/php.ini
+sed -i "s#^max_execution_time.*#max_execution_time = 300#g" /etc/php.ini
+sed -i "s#^max_input_time.*#max_input_time = 300#g" /etc/php.ini
+sed -i "s#^;date.timezone.*#date.timezone = Asia/Shanghai#g" /etc/php.ini
+
+
+systemctl enable httpd
+systemctl restart httpd
+
+
+Configure DB connection
+Database host: 127.0.0.1
+Database port: 3306
+
+
+
+# 查看和编辑配置文件
+在此编辑 Zabbix server 的配置文件 /usr/local/zabbix/etc/zabbix_server.conf
+您必须指定数据库的名称、用户和密码（如果使用的话）。
+DBName=zabbix
+User=zabbix
+# 默认注释，需要添加DBPassword
+# DBPassword=
+
+# 日志文件位置
+LogFile=/tmp/zabbix_server.log
+
+
+# 生成系统服务
+cd /root/zabbix-6.0.*/misc/init.d/fedora/core/
+cp * /etc/init.d/
+sed -i "s#BASEDIR=.*#BASEDIR=/usr/local/zabbix#" /etc/init.d/zabbix_server
+sed -i "s#BASEDIR=.*#BASEDIR=/usr/local/zabbix#" /etc/init.d/zabbix_agentd
+
+service zabbix_server start
+service zabbix_agentd start
+chkconfig zabbix_server on
+chkconfig zabbix_agentd on
+
+
+
+# 中文乱码，可以到window系统找到自己喜欢的字体上传上去
+在windows系统中的c:\windows\fonts目录中copy一个自己喜欢的字体文出来，如msyh.ttf
+将copy出来的字体上传到Zabbix根目录中的fonts目录下
+
+zabbix5以前版本：
+/var/www/html/zabbix/fonts
+zabbix6：
+/var/www/html/zabbix/assets/fonts
+
+将原来的字体文件“DejaVusSans.ttf”备份
+将上传的字体文件如msyh.ttf改名为DejaVusSans.ttf，再次刷新浏览器即可。
+
+
+
+==================================================================
+For client
+
+yum --disablerepo=* --enablerepo=c6-media -y install pcre-devel
+
+ #  安装Zabbix
+groupadd zabbix
+useradd -g zabbix zabbix
+
+tar zxf zabbix-4.0.1.tar.gz
+cd zabbix-4.0.1
+./configure --prefix=/usr/local/zabbix --enable-agent
+make install
+
+vi /usr/local/etc/zabbix_agentd.conf
+# 被动模式
+Server=127.0.0.1,server_ip
+# 主动模式
+ServerActive=127.0.0.1,server_ip
+# 是否支持自定义脚本（1是，0否）
+UnsafeUserParameters=0
+
+
+ /usr/local/sbin/zabbix_agentd
+------------------
+sed -i "s@Server=127.0.0.1@Server=10.10.10.220@g" /etc/zabbix/zabbix_agentd.conf
+sed -i "s@ServerActive=127.0.0.1@ServerActive=10.10.10.220:10051@g" /etc/zabbix/zabbix_agentd.conf
+sed -i "s@tmp/zabbix_agentd.log@var/log/zabbix/zabbix_agentd.log@g"  /etc/zabbix/zabbix_agentd.conf
+sed -i "s@^# UnsafeUserParameters=0@UnsafeUserParameters=1\n@g" /etc/zabbix/zabbix_agentd.conf
+--------------------- 
+
+
+# 生成系统服务
+cp /root/zabbix-6.0.6/misc/init.d/fedora/core/zabbix_*/etc/init.d/
+sed -i "s#BASEDIR=.*#BASEDIR=/usr/local/zabbix#" /etc/init.d/zabbix_agentd
+
+chkconfig --add zabbix_agentd
+chkconfig --add zabbix_server
+
+systemctl restart  zabbix_agentd  zabbix_server httpd php-fpm
+
+
+
+## 遇到的问题：
+安装完成后，通过浏览器访问，报内部错误500
+查看php-fpm 报如下错误
+Fatal error: Call to undefined function json_decode()
+
+yum install -y php-json
+systemctl restart php-fpm httpd
+
+
+# 无其他语言可选
+You are not able to choose some of the languages, because locales for them are not installed on the web server.
+原因：web服务器没有安装中文包
+安装zh_CN语言包
+    dnf install langpacks-zh_CN.noarch
+安装glibc-common实现对语言包的识别
+    dnf install glibc-common
+如果已安装过，需要重新安装
+    dnf reinstall glibc-common
+测试安装是否成功，如果看到zh_CN语言已安装，则表示成功
+    locale -a | grep zh_CN
+安装完成后，回到web页面刷新，可以看到中文语言已可以选中
+
+
+
+make[2]: 进入目录“/root/zabbix-6.0.16/src/zabbix_sender”
+depbase=`echo zabbix_sender.o | sed 's|[^/]*$|.deps/&|;s|\.o$||'`;\
+cc -DHAVE_CONFIG_H -I. -I../../include     -std=gnu99   -MT zabbix_sender.o -MD -MP -MF $depbase.Tpo -c -o zabbix_sender.o zabbix_sender.c &&\
+mv -f $depbase.Tpo $depbase.Po
+cc  -std=gnu99    -rdynamic     -o zabbix_sender zabbix_sender.o ../../src/libs/zbxjson/libzbxjson.a ../../src/libs/zbxalgo/libzbxalgo.a ../../src/libs/zbxregexp/libzbxregexp.a ../../src/libs/zbxcommshigh/libzbxcommshigh.a ../../src/libs/zbxcomms/libzbxcomms.a ../../src/libs/zbxcommon/libzbxcommon.a ../../src/libs/zbxlog/libzbxlog.a ../../src/libs/zbxsys/libzbxsys.a ../../src/libs/zbxprof/libzbxprof.a ../../src/libs/zbxnix/libzbxnix.a ../../src/libs/zbxcrypto/libzbxcrypto.a ../../src/libs/zbxconf/libzbxconf.a ../../src/libs/zbxcompress/libzbxcompress.a -lz -lpthread  -lz -lpthread -lm -ldl  -lresolv  -lpcre
+make[3]: 进入目录“/root/zabbix-6.0.16/src/zabbix_sender”
+ /usr/bin/mkdir -p '/usr/local/zabbix/bin'
+  /usr/bin/install -c zabbix_sender '/usr/local/zabbix/bin'
+make[3]: 对“install-data-am”无需做任何事。
+make[3]: 离开目录“/root/zabbix-6.0.16/src/zabbix_sender”
+make[2]: 离开目录“/root/zabbix-6.0.16/src/zabbix_sender”
+Making install in go
+make[2]: 进入目录“/root/zabbix-6.0.16/src/go”
+make[3]: 进入目录“/root/zabbix-6.0.16/src/go”
+ /usr/bin/mkdir -p '/usr/local/zabbix/etc'
+ /usr/bin/install -c -m 644 conf/zabbix_web_service.conf '/usr/local/zabbix/etc'
+GOBIN=/usr/local/zabbix/sbin go install -ldflags="-X 'zabbix.com/pkg/version.compileDate=`date +"%b %_d %Y"`' -X zabbix.com/pkg/version.compileTime=`date +%H:%M:%S` -X zabbix.com/pkg/version.compileOs=`go env GOOS` -X zabbix.com/pkg/version.compileArch=`go env GOARCH` -X main.applicationName=zabbix_web_service" zabbix.com/cmd/zabbix_web_service
+vendor/github.com/chromedp/chromedp/js.go:4:2: cannot find package "." in:
+        /root/zabbix-6.0.16/src/go/vendor/embed
+make[3]: *** [Makefile:643：install-zabbix.com/cmd/zabbix_web_service] 错误 1
+make[3]: 离开目录“/root/zabbix-6.0.16/src/go”
+make[2]: *** [Makefile:513：install-am] 错误 2
+make[2]: 离开目录“/root/zabbix-6.0.16/src/go”
+make[1]: *** [Makefile:511：install-recursive] 错误 1
+make[1]: 离开目录“/root/zabbix-6.0.16/src”
+make: *** [Makefile:547：install-recursive] 错误 1
+
+
+
+
+
+
+
+
+

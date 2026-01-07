@@ -1,0 +1,239 @@
+# 1 创建zabbix_agent运行用户
+**青云环境需要以`root`用户执行，无需创建用户**
+```bash
+useradd -s /sbin/nologin zabbix
+```
+
+# 2 安装zabbix_agent
+## 2.1 解压安装包
+```bash
+mkdir /usr/local/zabbix_agent
+tar zxvf zabbix_agent-4.0.35-linux-3.0-amd64-static.tar.gz -C /usr/local/zabbix_agent/
+```
+
+
+## 2.2. 修改zabbix_agent配置
+替换 Zabbix Server IP 和 客户端 Hostname
+```bash
+sed -i 's/^Server=.*/Server=21.122.153.220/' /usr/local/zabbix_agent/conf/zabbix_agentd.conf
+sed -i 's/^ServerActive=.*/ServerActive=21.122.153.220/' /usr/local/zabbix_agent/conf/zabbix_agentd.conf
+sed -i 's/^Hostname=.*/Hostname=bocd1-webservice0/' /usr/local/zabbix_agent/conf/zabbix_agentd.conf
+```
+
+针对监控青云服务器的配置
+```bash
+sed -i 's/^# AllowRoot=.*/AllowRoot=1/' /usr/local/zabbix_agent/conf/zabbix_agentd.conf
+echo 'Include=/usr/local/zabbix_agent/conf/zabbix_agentd/*.conf' >> /usr/local/zabbix_agent/conf/zabbix_agentd.conf
+```
+
+将自定义监控脚本上传到`/usr/local/zabbix_agent/conf/zabbix_agentd/`
+userparameter_qingcloud.conf
+userparameter_mysql.conf
+
+
+## 2.3 创建zabbix_agent服务脚本
+### 2.3.1 使用systemd启动服务（推荐）
+创建服务脚本
+```bash
+cat >  /etc/systemd/system/zabbix_agentd.service << EOL
+[Unit]
+Description=Zabbix Agent
+After=syslog.target network.target
+ 
+[Service]
+Type=oneshot
+User=root
+ExecStart=/usr/local/zabbix_agent/sbin/zabbix_agentd -c /usr/local/zabbix_agent/conf/zabbix_agentd.conf
+RemainAfterExit=yes
+PIDFile=/var/run/zabbix_agent.pid
+ 
+[Install]
+WantedBy=multi-user.target
+EOL
+```
+
+配置开机自动
+```bash
+systemctl daemon-reload
+systemctl start zabbix_agentd
+systemctl enable zabbix_agentd
+```
+
+
+### 2.3.2 使用init.d启动脚本
+**zabbix_agentd 脚本内容如下（注意：BASEDIR为zabbix所在的目录）**
+```bash
+vi /etc/init.d/zabbix_agentd
+#!/bin/bash
+#
+# chkconfig: - 90 10
+# description:  Starts and stops Zabbix Agent using chkconfig
+#				Tested on Fedora Core 2 - 5
+#				Should work on all Fedora Core versions
+#
+# @name:	zabbix_agentd
+# @author:	Alexander Hagenah <hagenah@topconcepts.com>
+# @created:	18.04.2006
+#
+# Modified for Zabbix 2.0.0
+# May 2012, Zabbix SIA
+#
+# Source function library.
+. /etc/init.d/functions
+
+# Variables
+# Edit these to match your system settings
+
+	# Zabbix-Directory
+	BASEDIR=/usr/local/zabbix_agent
+
+	# Binary File
+	BINARY_NAME=zabbix_agentd
+        
+        # Config File
+        CONFIG_NAME=zabbix_agentd.conf
+
+	# Full Binary File Call
+	FULLPATH="$BASEDIR/sbin/$BINARY_NAME -c $BASEDIR/conf/$CONFIG_NAME"
+
+	# PID file
+	PIDFILE=/tmp/$BINARY_NAME.pid
+
+	# Establish args
+	ERROR=0
+	STOPPING=0
+
+#
+# No need to edit the things below
+#
+
+# application checking status
+if [ -f $PIDFILE  ] && [ -s $PIDFILE ]
+	then
+	PID=`cat $PIDFILE`
+
+	if [ "x$PID" != "x" ] && kill -0 $PID 2>/dev/null && [ $BINARY_NAME == `ps -e | grep $PID | awk '{print $4}'` ]
+	then
+		STATUS="$BINARY_NAME (pid `pidof $APP`) running.."
+		RUNNING=1
+	else
+		rm -f $PIDFILE
+		STATUS="$BINARY_NAME (pid file existed ($PID) and now removed) not running.."
+		RUNNING=0
+	fi
+else
+	if [ `ps -e | grep $BINARY_NAME | head -1 | awk '{ print $1 }'` ]
+		then
+		STATUS="$BINARY_NAME (pid `pidof $APP`, but no pid file) running.."
+	else
+		STATUS="$BINARY_NAME (no pid file) not running"
+	fi
+	RUNNING=0
+fi
+
+# functions
+start() {
+	if [ $RUNNING -eq 1 ]
+		then
+		echo "$0 $ARG: $BINARY_NAME (pid $PID) already running"
+	else
+		action $"Starting $BINARY_NAME: " $FULLPATH
+		touch /var/lock/subsys/$BINARY_NAME
+	fi
+}
+
+stop() {
+	echo -n $"Shutting down $BINARY_NAME: "
+	killproc $BINARY_NAME
+	RETVAL=$?
+	echo
+	[ $RETVAL -eq 0 ] && rm -f /var/lock/subsys/$BINARY_NAME
+	RUNNING=0
+}
+
+
+# logic
+case "$1" in
+	start)
+		start
+		;;
+	stop)
+		stop
+		;;
+	status)
+		status $BINARY_NAME
+		;;
+	restart)
+		stop
+		sleep 10
+		start
+		;;
+	help|*)
+		echo $"Usage: $0 {start|stop|status|restart|help}"
+		cat <<EOF
+
+			start		- start $BINARY_NAME
+			stop		- stop $BINARY_NAME
+			status		- show current status of $BINARY_NAME
+			restart		- restart $BINARY_NAME if running by sending a SIGHUP or start if not running
+			help		- this screen
+
+EOF
+	exit 1
+	;;
+esac
+
+exit 0
+```
+
+配置开机自动
+```bash
+chmod +x /etc/init.d/zabbix_agentd
+service zabbix_agentd start 
+chkconfig zabbix_agentd on
+```
+
+### 2.3.4 使用init.d启动脚本
+**老版本的系统可参考如下脚本（ubuntu12）**
+```bash
+vi /etc/init.d/zabbix_agentd
+#!/bin/sh
+#
+# Zabbix agent start/stop script.
+#
+# Copyright (C) 2001-2021 Zabbix SIA
+
+BASEDIR=/usr/local/zabbix_agent
+NAME=zabbix_agentd
+CONF=zabbix_agentd.conf
+DAEMON=${BASEDIR}/sbin/${NAME}
+STARTOPTS="-c ${BASEDIR}/conf/${CONF}"
+DESC="Zabbix agent daemon"
+PID=/tmp/$NAME.pid
+
+#test -f $DAEMON || exit 0
+
+case "$1" in
+  start)
+        echo "Starting $DESC: $NAME"
+        start-stop-daemon --start --oknodo --pidfile $PID --exec $DAEMON -- $STARTOPTS
+        ;;
+  stop)
+        echo "Stopping $DESC: $NAME"
+        start-stop-daemon --stop --quiet --pidfile $PID --retry=TERM/10/KILL/5 && exit 0
+        start-stop-daemon --stop --oknodo --exec $DAEMON --name $NAME --retry=TERM/10/KILL/5
+        ;;
+  restart|force-reload)
+        $0 stop
+        $0 start
+        ;;
+  *)
+        N=/etc/init.d/$NAME
+        echo "Usage: $N {start|stop|restart|force-reload}" >&2
+        exit 1
+        ;;
+esac
+
+exit 0
+```
+

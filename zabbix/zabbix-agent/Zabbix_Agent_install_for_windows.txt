@@ -1,0 +1,17 @@
+1、创建zabbix_agent目录
+C:\Program Files\zabbix_agent
+
+2、将zabbix_agent解压至该目录
+修改配置文件
+LogFile=C:\Program Files\zabbix_agent\zabbix_agentd.log
+Server=214.4.252.220
+ServerActive=214.4.252.220
+Hostname=bocd5-tools
+
+3、配置zabbix_agent服务
+以管理员运行cmd，运行以下命令（-i安装，-d卸载）
+"C:\Program Files\zabbix_agent\bin\zabbix_agentd.exe" -c "C:\Program Files\zabbix_agent\conf\zabbix_agentd.conf" -i
+
+启动服务
+net start "zabbix agent"
+

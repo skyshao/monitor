@@ -1,0 +1,18 @@
+    -
+      host: HOST_NAME
+      name: HOST_NAME
+      templates:
+        -
+          name: 'Server Inspur BMC SNMPv3'
+      groups:
+        -
+          name: GROUP_NAME
+      interfaces:
+        -
+          type: SNMP
+          ip: IP_ADDR
+          port: '6110'
+          details:
+            community: Bjsybjggfwq12#$
+          interface_ref: if1
+      inventory_mode: DISABLED

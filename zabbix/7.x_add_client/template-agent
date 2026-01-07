@@ -1,0 +1,10 @@
+    - host: HOST_NAME
+      name: HOST_NAME
+      templates:
+        - name: 'Linux by Zabbix agent qingcloud v1.1'
+      groups:
+        - name: GROUP_NAME
+      interfaces:
+        - ip: IP_ADDR
+          interface_ref: if1
+      inventory_mode: DISABLED

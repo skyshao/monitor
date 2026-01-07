@@ -1,0 +1,26 @@
+    -
+      host: HOST_NAME
+      name: HOST_NAME
+      proxy:
+        name: PROXY_NAME
+      templates:
+        -
+          name: 'UNIS Server R3820 iBMC'
+      groups:
+        -
+          name: GROUP_NAME
+      interfaces:
+        -
+          type: SNMP
+          ip: IP_ADDR
+          port: '161'
+          details:
+            version: SNMPV3
+            securityname: admin
+            securitylevel: AUTHPRIV
+            authprotocol: SHA256
+            authpassphrase: '9zB<e.,53He0N@zF'
+            privprotocol: AES128
+            privpassphrase: '9zB<e.,53He0N@zF'
+          interface_ref: if1
+      inventory_mode: DISABLED

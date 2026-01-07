@@ -1,0 +1,1588 @@
+zabbix_export:
+  version: '6.0'
+  date: '2023-08-08T16:51:23Z' 
+  hosts:
+    -
+      host: A-GF-B0104-02U-Mgmt-Controller-01
+      name: A-GF-B0104-02U-Mgmt-Controller-01
+      templates:
+        -
+          name: 'Server Inspur BMC SNMPv3'
+      groups:
+        -
+          name: 管理-A
+      interfaces:
+        -
+          type: SNMP
+          ip: 192.52.140.11
+          port: '161'
+          details:
+            community: Bjsybjggfwq12#$
+          interface_ref: if1
+      inventory_mode: DISABLED
+    -
+      host: A-GF-B0105-02U-Mgmt-Controller-02
+      name: A-GF-B0105-02U-Mgmt-Controller-02
+      templates:
+        -
+          name: 'Server Inspur BMC SNMPv3'
+      groups:
+        -
+          name: 管理-A
+      interfaces:
+        -
+          type: SNMP
+          ip: 192.52.140.12
+          port: '161'
+          details:
+            community: Bjsybjggfwq12#$
+          interface_ref: if1
+      inventory_mode: DISABLED
+    -
+      host: A-GF-B0106-02U-Mgmt-Controller-03
+      name: A-GF-B0106-02U-Mgmt-Controller-03
+      templates:
+        -
+          name: 'Server Inspur BMC SNMPv3'
+      groups:
+        -
+          name: 管理-A
+      interfaces:
+        -
+          type: SNMP
+          ip: 192.52.140.13
+          port: '161'
+          details:
+            community: Bjsybjggfwq12#$
+          interface_ref: if1
+      inventory_mode: DISABLED
+    -
+      host: A-GF-B0107-02U-Mgmt-Controller-04
+      name: A-GF-B0107-02U-Mgmt-Controller-04
+      templates:
+        -
+          name: 'Server Inspur BMC SNMPv3'
+      groups:
+        -
+          name: 管理-A
+      interfaces:
+        -
+          type: SNMP
+          ip: 192.52.140.14
+          port: '161'
+          details:
+            community: Bjsybjggfwq12#$
+          interface_ref: if1
+      inventory_mode: DISABLED
+    -
+      host: A-GF-B0104-05U-Mgmt-Controller-05
+      name: A-GF-B0104-05U-Mgmt-Controller-05
+      templates:
+        -
+          name: 'Server Inspur BMC SNMPv3'
+      groups:
+        -
+          name: 管理-A
+      interfaces:
+        -
+          type: SNMP
+          ip: 192.52.140.15
+          port: '161'
+          details:
+            community: Bjsybjggfwq12#$
+          interface_ref: if1
+      inventory_mode: DISABLED
+    -
+      host: A-GF-B0105-05U-Mgmt-Controller-06
+      name: A-GF-B0105-05U-Mgmt-Controller-06
+      templates:
+        -
+          name: 'Server Inspur BMC SNMPv3'
+      groups:
+        -
+          name: 管理-A
+      interfaces:
+        -
+          type: SNMP
+          ip: 192.52.140.16
+          port: '161'
+          details:
+            community: Bjsybjggfwq12#$
+          interface_ref: if1
+      inventory_mode: DISABLED
+    -
+      host: A-GF-B0106-05U-Mgmt-Controller-07
+      name: A-GF-B0106-05U-Mgmt-Controller-07
+      templates:
+        -
+          name: 'Server Inspur BMC SNMPv3'
+      groups:
+        -
+          name: 管理-A
+      interfaces:
+        -
+          type: SNMP
+          ip: 192.52.140.17
+          port: '161'
+          details:
+            community: Bjsybjggfwq12#$
+          interface_ref: if1
+      inventory_mode: DISABLED
+    -
+      host: A-GF-B0107-05U-Mgmt-Controller-08
+      name: A-GF-B0107-05U-Mgmt-Controller-08
+      templates:
+        -
+          name: 'Server Inspur BMC SNMPv3'
+      groups:
+        -
+          name: 管理-A
+      interfaces:
+        -
+          type: SNMP
+          ip: 192.52.140.18
+          port: '161'
+          details:
+            community: Bjsybjggfwq12#$
+          interface_ref: if1
+      inventory_mode: DISABLED
+    -
+      host: A-GF-B0104-08U-Service-Network-01
+      name: A-GF-B0104-08U-Service-Network-01
+      templates:
+        -
+          name: 'Server Inspur BMC SNMPv3'
+      groups:
+        -
+          name: 管理-A
+      interfaces:
+        -
+          type: SNMP
+          ip: 192.52.140.19
+          port: '161'
+          details:
+            community: Bjsybjggfwq12#$
+          interface_ref: if1
+      inventory_mode: DISABLED
+    -
+      host: A-GF-B0105-08U-Service-Network-02
+      name: A-GF-B0105-08U-Service-Network-02
+      templates:
+        -
+          name: 'Server Inspur BMC SNMPv3'
+      groups:
+        -
+          name: 管理-A
+      interfaces:
+        -
+          type: SNMP
+          ip: 192.52.140.20
+          port: '161'
+          details:
+            community: Bjsybjggfwq12#$
+          interface_ref: if1
+      inventory_mode: DISABLED
+    -
+      host: A-GF-B0104-11U-Service-Network-03
+      name: A-GF-B0104-11U-Service-Network-03
+      templates:
+        -
+          name: 'Server Inspur BMC SNMPv3'
+      groups:
+        -
+          name: 管理-A
+      interfaces:
+        -
+          type: SNMP
+          ip: 192.52.140.21
+          port: '161'
+          details:
+            community: Bjsybjggfwq12#$
+          interface_ref: if1
+      inventory_mode: DISABLED
+    -
+      host: A-GF-B0105-11U-Service-Network-04
+      name: A-GF-B0105-11U-Service-Network-04
+      templates:
+        -
+          name: 'Server Inspur BMC SNMPv3'
+      groups:
+        -
+          name: 管理-A
+      interfaces:
+        -
+          type: SNMP
+          ip: 192.52.140.22
+          port: '161'
+          details:
+            community: Bjsybjggfwq12#$
+          interface_ref: if1
+      inventory_mode: DISABLED
+    -
+      host: A-GF-B0104-17U-Service-Compute-02
+      name: A-GF-B0104-17U-Service-Compute-02
+      templates:
+        -
+          name: 'Server Inspur BMC SNMPv3'
+      groups:
+        -
+          name: 计算-A
+      interfaces:
+        -
+          type: SNMP
+          ip: 192.52.140.24
+          port: '161'
+          details:
+            community: Bjsybjggfwq12#$
+          interface_ref: if1
+      inventory_mode: DISABLED
+    -
+      host: A-GF-B0104-20U-Service-Compute-03
+      name: A-GF-B0104-20U-Service-Compute-03
+      templates:
+        -
+          name: 'Server Inspur BMC SNMPv3'
+      groups:
+        -
+          name: 计算-A
+      interfaces:
+        -
+          type: SNMP
+          ip: 192.52.140.25
+          port: '161'
+          details:
+            community: Bjsybjggfwq12#$
+          interface_ref: if1
+      inventory_mode: DISABLED
+    -
+      host: A-GF-B0104-23U-Service-Compute-04
+      name: A-GF-B0104-23U-Service-Compute-04
+      templates:
+        -
+          name: 'Server Inspur BMC SNMPv3'
+      groups:
+        -
+          name: 计算-A
+      interfaces:
+        -
+          type: SNMP
+          ip: 192.52.140.26
+          port: '161'
+          details:
+            community: Bjsybjggfwq12#$
+          interface_ref: if1
+      inventory_mode: DISABLED
+    -
+      host: A-GF-B0105-14U-Service-Compute-05
+      name: A-GF-B0105-14U-Service-Compute-05
+      templates:
+        -
+          name: 'Server Inspur BMC SNMPv3'
+      groups:
+        -
+          name: 计算-A
+      interfaces:
+        -
+          type: SNMP
+          ip: 192.52.140.27
+          port: '161'
+          details:
+            community: Bjsybjggfwq12#$
+          interface_ref: if1
+      inventory_mode: DISABLED
+    -
+      host: A-GF-B0105-17U-Service-Compute-06
+      name: A-GF-B0105-17U-Service-Compute-06
+      templates:
+        -
+          name: 'Server Inspur BMC SNMPv3'
+      groups:
+        -
+          name: 计算-A
+      interfaces:
+        -
+          type: SNMP
+          ip: 192.52.140.28
+          port: '161'
+          details:
+            community: Bjsybjggfwq12#$
+          interface_ref: if1
+      inventory_mode: DISABLED
+    -
+      host: A-GF-B0105-20U-Service-Compute-07
+      name: A-GF-B0105-20U-Service-Compute-07
+      templates:
+        -
+          name: 'Server Inspur BMC SNMPv3'
+      groups:
+        -
+          name: 计算-A
+      interfaces:
+        -
+          type: SNMP
+          ip: 192.52.140.29
+          port: '161'
+          details:
+            community: Bjsybjggfwq12#$
+          interface_ref: if1
+      inventory_mode: DISABLED
+    -
+      host: A-GF-B0105-23U-Service-Compute-08
+      name: A-GF-B0105-23U-Service-Compute-08
+      templates:
+        -
+          name: 'Server Inspur BMC SNMPv3'
+      groups:
+        -
+          name: 计算-A
+      interfaces:
+        -
+          type: SNMP
+          ip: 192.52.140.30
+          port: '161'
+          details:
+            community: Bjsybjggfwq12#$
+          interface_ref: if1
+      inventory_mode: DISABLED
+    -
+      host: A-GF-B0106-08U-Service-Compute-09
+      name: A-GF-B0106-08U-Service-Compute-09
+      templates:
+        -
+          name: 'Server Inspur BMC SNMPv3'
+      groups:
+        -
+          name: 计算-A
+      interfaces:
+        -
+          type: SNMP
+          ip: 192.52.140.31
+          port: '161'
+          details:
+            community: Bjsybjggfwq12#$
+          interface_ref: if1
+      inventory_mode: DISABLED
+    -
+      host: A-GF-B0106-11U-Service-Compute-10
+      name: A-GF-B0106-11U-Service-Compute-10
+      templates:
+        -
+          name: 'Server Inspur BMC SNMPv3'
+      groups:
+        -
+          name: 计算-A
+      interfaces:
+        -
+          type: SNMP
+          ip: 192.52.140.32
+          port: '161'
+          details:
+            community: Bjsybjggfwq12#$
+          interface_ref: if1
+      inventory_mode: DISABLED
+    -
+      host: A-GF-B0106-14U-Service-Compute-11
+      name: A-GF-B0106-14U-Service-Compute-11
+      templates:
+        -
+          name: 'Server Inspur BMC SNMPv3'
+      groups:
+        -
+          name: 计算-A
+      interfaces:
+        -
+          type: SNMP
+          ip: 192.52.140.33
+          port: '161'
+          details:
+            community: Bjsybjggfwq12#$
+          interface_ref: if1
+      inventory_mode: DISABLED
+    -
+      host: A-GF-B0106-17U-Service-Compute-12
+      name: A-GF-B0106-17U-Service-Compute-12
+      templates:
+        -
+          name: 'Server Inspur BMC SNMPv3'
+      groups:
+        -
+          name: 计算-A
+      interfaces:
+        -
+          type: SNMP
+          ip: 192.52.140.34
+          port: '161'
+          details:
+            community: Bjsybjggfwq12#$
+          interface_ref: if1
+      inventory_mode: DISABLED
+    -
+      host: A-GF-B0106-20U-Service-Compute-13
+      name: A-GF-B0106-20U-Service-Compute-13
+      templates:
+        -
+          name: 'Server Inspur BMC SNMPv3'
+      groups:
+        -
+          name: 计算-A
+      interfaces:
+        -
+          type: SNMP
+          ip: 192.52.140.35
+          port: '161'
+          details:
+            community: Bjsybjggfwq12#$
+          interface_ref: if1
+      inventory_mode: DISABLED
+    -
+      host: A-GF-B0106-23U-Service-Compute-14
+      name: A-GF-B0106-23U-Service-Compute-14
+      templates:
+        -
+          name: 'Server Inspur BMC SNMPv3'
+      groups:
+        -
+          name: 计算-A
+      interfaces:
+        -
+          type: SNMP
+          ip: 192.52.140.36
+          port: '161'
+          details:
+            community: Bjsybjggfwq12#$
+          interface_ref: if1
+      inventory_mode: DISABLED
+    -
+      host: A-GF-B0107-08U-Service-Compute-15
+      name: A-GF-B0107-08U-Service-Compute-15
+      templates:
+        -
+          name: 'Server Inspur BMC SNMPv3'
+      groups:
+        -
+          name: 计算-A
+      interfaces:
+        -
+          type: SNMP
+          ip: 192.52.140.37
+          port: '161'
+          details:
+            community: Bjsybjggfwq12#$
+          interface_ref: if1
+      inventory_mode: DISABLED
+    -
+      host: A-GF-B0107-11U-Service-Compute-16
+      name: A-GF-B0107-11U-Service-Compute-16
+      templates:
+        -
+          name: 'Server Inspur BMC SNMPv3'
+      groups:
+        -
+          name: 计算-A
+      interfaces:
+        -
+          type: SNMP
+          ip: 192.52.140.38
+          port: '161'
+          details:
+            community: Bjsybjggfwq12#$
+          interface_ref: if1
+      inventory_mode: DISABLED
+    -
+      host: A-GF-B0107-14U-Service-Compute-17
+      name: A-GF-B0107-14U-Service-Compute-17
+      templates:
+        -
+          name: 'Server Inspur BMC SNMPv3'
+      groups:
+        -
+          name: 计算-A
+      interfaces:
+        -
+          type: SNMP
+          ip: 192.52.140.39
+          port: '161'
+          details:
+            community: Bjsybjggfwq12#$
+          interface_ref: if1
+      inventory_mode: DISABLED
+    -
+      host: A-GF-B0107-17U-Service-Compute-18
+      name: A-GF-B0107-17U-Service-Compute-18
+      templates:
+        -
+          name: 'Server Inspur BMC SNMPv3'
+      groups:
+        -
+          name: 计算-A
+      interfaces:
+        -
+          type: SNMP
+          ip: 192.52.140.40
+          port: '161'
+          details:
+            community: Bjsybjggfwq12#$
+          interface_ref: if1
+      inventory_mode: DISABLED
+    -
+      host: A-GF-B0107-20U-Service-Compute-19
+      name: A-GF-B0107-20U-Service-Compute-19
+      templates:
+        -
+          name: 'Server Inspur BMC SNMPv3'
+      groups:
+        -
+          name: 计算-A
+      interfaces:
+        -
+          type: SNMP
+          ip: 192.52.140.41
+          port: '161'
+          details:
+            community: Bjsybjggfwq12#$
+          interface_ref: if1
+      inventory_mode: DISABLED
+    -
+      host: A-GF-B0107-23U-Service-Compute-20
+      name: A-GF-B0107-23U-Service-Compute-20
+      templates:
+        -
+          name: 'Server Inspur BMC SNMPv3'
+      groups:
+        -
+          name: 计算-A
+      interfaces:
+        -
+          type: SNMP
+          ip: 192.52.140.42
+          port: '161'
+          details:
+            community: Bjsybjggfwq12#$
+          interface_ref: if1
+      inventory_mode: DISABLED
+    -
+      host: A-GF-B0108-14U-Service-Compute-21
+      name: A-GF-B0108-14U-Service-Compute-21
+      templates:
+        -
+          name: 'Server Inspur BMC SNMPv3'
+      groups:
+        -
+          name: 计算-A
+      interfaces:
+        -
+          type: SNMP
+          ip: 192.52.140.43
+          port: '161'
+          details:
+            community: Bjsybjggfwq12#$
+          interface_ref: if1
+      inventory_mode: DISABLED
+    -
+      host: A-GF-B0108-17U-Service-Compute-22
+      name: A-GF-B0108-17U-Service-Compute-22
+      templates:
+        -
+          name: 'Server Inspur BMC SNMPv3'
+      groups:
+        -
+          name: 计算-A
+      interfaces:
+        -
+          type: SNMP
+          ip: 192.52.140.44
+          port: '161'
+          details:
+            community: Bjsybjggfwq12#$
+          interface_ref: if1
+      inventory_mode: DISABLED
+    -
+      host: A-GF-B0108-20U-Service-Compute-23
+      name: A-GF-B0108-20U-Service-Compute-23
+      templates:
+        -
+          name: 'Server Inspur BMC SNMPv3'
+      groups:
+        -
+          name: 计算-A
+      interfaces:
+        -
+          type: SNMP
+          ip: 192.52.140.45
+          port: '161'
+          details:
+            community: Bjsybjggfwq12#$
+          interface_ref: if1
+      inventory_mode: DISABLED
+    -
+      host: A-GF-B0108-23U-Service-Compute-24
+      name: A-GF-B0108-23U-Service-Compute-24
+      templates:
+        -
+          name: 'Server Inspur BMC SNMPv3'
+      groups:
+        -
+          name: 计算-A
+      interfaces:
+        -
+          type: SNMP
+          ip: 192.52.140.46
+          port: '161'
+          details:
+            community: Bjsybjggfwq12#$
+          interface_ref: if1
+      inventory_mode: DISABLED
+    -
+      host: A-GF-B0108-26U-Service-Compute-25
+      name: A-GF-B0108-26U-Service-Compute-25
+      templates:
+        -
+          name: 'Server Inspur BMC SNMPv3'
+      groups:
+        -
+          name: 计算-A
+      interfaces:
+        -
+          type: SNMP
+          ip: 192.52.140.47
+          port: '161'
+          details:
+            community: Bjsybjggfwq12#$
+          interface_ref: if1
+      inventory_mode: DISABLED
+    -
+      host: A-GF-B0102-02U-Service-Compute-26
+      name: A-GF-B0102-02U-Service-Compute-26
+      templates:
+        -
+          name: 'Server Inspur BMC SNMPv3'
+      groups:
+        -
+          name: 计算-A
+      interfaces:
+        -
+          type: SNMP
+          ip: 192.52.140.61
+          port: '161'
+          details:
+            community: Bjsybjggfwq12#$
+          interface_ref: if1
+      inventory_mode: DISABLED
+    -
+      host: A-GF-B0102-05U-Service-Compute-27
+      name: A-GF-B0102-05U-Service-Compute-27
+      templates:
+        -
+          name: 'Server Inspur BMC SNMPv3'
+      groups:
+        -
+          name: 计算-A
+      interfaces:
+        -
+          type: SNMP
+          ip: 192.52.140.62
+          port: '161'
+          details:
+            community: Bjsybjggfwq12#$
+          interface_ref: if1
+      inventory_mode: DISABLED
+    -
+      host: A-GF-B0102-08U-Service-Compute-28
+      name: A-GF-B0102-08U-Service-Compute-28
+      templates:
+        -
+          name: 'Server Inspur BMC SNMPv3'
+      groups:
+        -
+          name: 计算-A
+      interfaces:
+        -
+          type: SNMP
+          ip: 192.52.140.63
+          port: '161'
+          details:
+            community: Bjsybjggfwq12#$
+          interface_ref: if1
+      inventory_mode: DISABLED
+    -
+      host: A-GF-B0102-11U-Service-Compute-29
+      name: A-GF-B0102-11U-Service-Compute-29
+      templates:
+        -
+          name: 'Server Inspur BMC SNMPv3'
+      groups:
+        -
+          name: 计算-A
+      interfaces:
+        -
+          type: SNMP
+          ip: 192.52.140.64
+          port: '161'
+          details:
+            community: Bjsybjggfwq12#$
+          interface_ref: if1
+      inventory_mode: DISABLED
+    -
+      host: A-GF-B0102-14U-Service-Compute-30
+      name: A-GF-B0102-14U-Service-Compute-30
+      templates:
+        -
+          name: 'Server Inspur BMC SNMPv3'
+      groups:
+        -
+          name: 计算-A
+      interfaces:
+        -
+          type: SNMP
+          ip: 192.52.140.65
+          port: '161'
+          details:
+            community: Bjsybjggfwq12#$
+          interface_ref: if1
+      inventory_mode: DISABLED
+    -
+      host: A-GF-B0102-17U-Service-Compute-31
+      name: A-GF-B0102-17U-Service-Compute-31
+      templates:
+        -
+          name: 'Server Inspur BMC SNMPv3'
+      groups:
+        -
+          name: 计算-A
+      interfaces:
+        -
+          type: SNMP
+          ip: 192.52.140.66
+          port: '161'
+          details:
+            community: Bjsybjggfwq12#$
+          interface_ref: if1
+      inventory_mode: DISABLED
+    -
+      host: A-GF-B0102-20U-Service-Compute-32
+      name: A-GF-B0102-20U-Service-Compute-32
+      templates:
+        -
+          name: 'Server Inspur BMC SNMPv3'
+      groups:
+        -
+          name: 计算-A
+      interfaces:
+        -
+          type: SNMP
+          ip: 192.52.140.67
+          port: '161'
+          details:
+            community: Bjsybjggfwq12#$
+          interface_ref: if1
+      inventory_mode: DISABLED
+    -
+      host: A-GF-B0102-23U-Service-Compute-33
+      name: A-GF-B0102-23U-Service-Compute-33
+      templates:
+        -
+          name: 'Server Inspur BMC SNMPv3'
+      groups:
+        -
+          name: 计算-A
+      interfaces:
+        -
+          type: SNMP
+          ip: 192.52.140.68
+          port: '161'
+          details:
+            community: Bjsybjggfwq12#$
+          interface_ref: if1
+      inventory_mode: DISABLED
+    -
+      host: A-GF-B0103-02U-Service-Compute-34
+      name: A-GF-B0103-02U-Service-Compute-34
+      templates:
+        -
+          name: 'Server Inspur BMC SNMPv3'
+      groups:
+        -
+          name: 计算-A
+      interfaces:
+        -
+          type: SNMP
+          ip: 192.52.140.69
+          port: '161'
+          details:
+            community: Bjsybjggfwq12#$
+          interface_ref: if1
+      inventory_mode: DISABLED
+    -
+      host: A-GF-B0103-05U-Service-Compute-35
+      name: A-GF-B0103-05U-Service-Compute-35
+      templates:
+        -
+          name: 'Server Inspur BMC SNMPv3'
+      groups:
+        -
+          name: 计算-A
+      interfaces:
+        -
+          type: SNMP
+          ip: 192.52.140.70
+          port: '161'
+          details:
+            community: Bjsybjggfwq12#$
+          interface_ref: if1
+      inventory_mode: DISABLED
+    -
+      host: A-GF-B0103-08U-Service-Compute-36
+      name: A-GF-B0103-08U-Service-Compute-36
+      templates:
+        -
+          name: 'Server Inspur BMC SNMPv3'
+      groups:
+        -
+          name: 计算-A
+      interfaces:
+        -
+          type: SNMP
+          ip: 192.52.140.71
+          port: '161'
+          details:
+            community: Bjsybjggfwq12#$
+          interface_ref: if1
+      inventory_mode: DISABLED
+    -
+      host: A-GF-B0103-11U-Service-Compute-37
+      name: A-GF-B0103-11U-Service-Compute-37
+      templates:
+        -
+          name: 'Server Inspur BMC SNMPv3'
+      groups:
+        -
+          name: 计算-A
+      interfaces:
+        -
+          type: SNMP
+          ip: 192.52.140.72
+          port: '161'
+          details:
+            community: Bjsybjggfwq12#$
+          interface_ref: if1
+      inventory_mode: DISABLED
+    -
+      host: A-GF-B0103-14U-Service-Compute-38
+      name: A-GF-B0103-14U-Service-Compute-38
+      templates:
+        -
+          name: 'Server Inspur BMC SNMPv3'
+      groups:
+        -
+          name: 计算-A
+      interfaces:
+        -
+          type: SNMP
+          ip: 192.52.140.73
+          port: '161'
+          details:
+            community: Bjsybjggfwq12#$
+          interface_ref: if1
+      inventory_mode: DISABLED
+    -
+      host: A-GF-B0103-17U-Service-Compute-39
+      name: A-GF-B0103-17U-Service-Compute-39
+      templates:
+        -
+          name: 'Server Inspur BMC SNMPv3'
+      groups:
+        -
+          name: 计算-A
+      interfaces:
+        -
+          type: SNMP
+          ip: 192.52.140.74
+          port: '161'
+          details:
+            community: Bjsybjggfwq12#$
+          interface_ref: if1
+      inventory_mode: DISABLED
+    -
+      host: A-GF-B0103-20U-Service-Compute-40
+      name: A-GF-B0103-20U-Service-Compute-40
+      templates:
+        -
+          name: 'Server Inspur BMC SNMPv3'
+      groups:
+        -
+          name: 计算-A
+      interfaces:
+        -
+          type: SNMP
+          ip: 192.52.140.75
+          port: '161'
+          details:
+            community: Bjsybjggfwq12#$
+          interface_ref: if1
+      inventory_mode: DISABLED
+    -
+      host: A-GF-B0103-23U-Service-Compute-41
+      name: A-GF-B0103-23U-Service-Compute-41
+      templates:
+        -
+          name: 'Server Inspur BMC SNMPv3'
+      groups:
+        -
+          name: 计算-A
+      interfaces:
+        -
+          type: SNMP
+          ip: 192.52.140.76
+          port: '161'
+          details:
+            community: Bjsybjggfwq12#$
+          interface_ref: if1
+      inventory_mode: DISABLED
+    -
+      host: A-GF-B0112-34U-Service-Compute-42
+      name: A-GF-B0112-34U-Service-Compute-42
+      templates:
+        -
+          name: 'Server Inspur BMC SNMPv3'
+      groups:
+        -
+          name: 计算-A
+      interfaces:
+        -
+          type: SNMP
+          ip: 192.52.140.77
+          port: '161'
+          details:
+            community: Bjsybjggfwq12#$
+          interface_ref: if1
+      inventory_mode: DISABLED
+    -
+      host: A-GF-B0113-34U-Service-Compute-43
+      name: A-GF-B0113-34U-Service-Compute-43
+      templates:
+        -
+          name: 'Server Inspur BMC SNMPv3'
+      groups:
+        -
+          name: 计算-A
+      interfaces:
+        -
+          type: SNMP
+          ip: 192.52.140.78
+          port: '161'
+          details:
+            community: Bjsybjggfwq12#$
+          interface_ref: if1
+      inventory_mode: DISABLED
+    -
+      host: A-ybj-paas-f5-1_B0109-26U
+      name: A-ybj-paas-f5-1_B0109-26U
+      templates:
+        -
+          name: 'Server Inspur BMC SNMPv3'
+      groups:
+        -
+          name: 负载-A
+      interfaces:
+        -
+          type: SNMP
+          ip: 192.52.140.101
+          port: '161'
+          details:
+            community: Bjsybjggfwq12#$
+          interface_ref: if1
+      inventory_mode: DISABLED
+    -
+      host: A-ybj-paas-f5-2_B0110-26U
+      name: A-ybj-paas-f5-2_B0110-26U
+      templates:
+        -
+          name: 'Server Inspur BMC SNMPv3'
+      groups:
+        -
+          name: 负载-A
+      interfaces:
+        -
+          type: SNMP
+          ip: 192.52.140.102
+          port: '161'
+          details:
+            community: Bjsybjggfwq12#$
+          interface_ref: if1
+      inventory_mode: DISABLED
+    -
+      host: A-ybj-paas-cmq-1_B0111-5U
+      name: A-ybj-paas-cmq-1_B0111-5U
+      templates:
+        -
+          name: 'Server Inspur BMC SNMPv3'
+      groups:
+        -
+          name: cmq-A
+      interfaces:
+        -
+          type: SNMP
+          ip: 192.52.140.103
+          port: '161'
+          details:
+            community: Bjsybjggfwq12#$
+          interface_ref: if1
+      inventory_mode: DISABLED
+    -
+      host: A-ybj-paas-cmq-2_B0112-5U
+      name: A-ybj-paas-cmq-2_B0112-5U
+      templates:
+        -
+          name: 'Server Inspur BMC SNMPv3'
+      groups:
+        -
+          name: cmq-A
+      interfaces:
+        -
+          type: SNMP
+          ip: 192.52.140.104
+          port: '161'
+          details:
+            community: Bjsybjggfwq12#$
+          interface_ref: if1
+      inventory_mode: DISABLED
+    -
+      host: A-ybj-paas-cmq-3_B0113-5U
+      name: A-ybj-paas-cmq-3_B0113-5U
+      templates:
+        -
+          name: 'Server Inspur BMC SNMPv3'
+      groups:
+        -
+          name: cmq-A
+      interfaces:
+        -
+          type: SNMP
+          ip: 192.52.140.105
+          port: '161'
+          details:
+            community: Bjsybjggfwq12#$
+          interface_ref: if1
+      inventory_mode: DISABLED
+    -
+      host: A-ybj-paas-csp-1_B0111-11U
+      name: A-ybj-paas-csp-1_B0111-11U
+      templates:
+        -
+          name: 'Server Inspur BMC SNMPv3'
+      groups:
+        -
+          name: csp-A
+      interfaces:
+        -
+          type: SNMP
+          ip: 192.52.140.106
+          port: '161'
+          details:
+            community: Bjsybjggfwq12#$
+          interface_ref: if1
+      inventory_mode: DISABLED
+    -
+      host: A-ybj-paas-csp-2_B0112-11U
+      name: A-ybj-paas-csp-2_B0112-11U
+      templates:
+        -
+          name: 'Server Inspur BMC SNMPv3'
+      groups:
+        -
+          name: csp-A
+      interfaces:
+        -
+          type: SNMP
+          ip: 192.52.140.107
+          port: '161'
+          details:
+            community: Bjsybjggfwq12#$
+          interface_ref: if1
+      inventory_mode: DISABLED
+    -
+      host: A-ybj-paas-csp-3_B0113-11U
+      name: A-ybj-paas-csp-3_B0113-11U
+      templates:
+        -
+          name: 'Server Inspur BMC SNMPv3'
+      groups:
+        -
+          name: csp-A
+      interfaces:
+        -
+          type: SNMP
+          ip: 192.52.140.108
+          port: '161'
+          details:
+            community: Bjsybjggfwq12#$
+          interface_ref: if1
+      inventory_mode: DISABLED
+    -
+      host: A-ybj-paas-csp-4_B0109-17U
+      name: A-ybj-paas-csp-4_B0109-17U
+      templates:
+        -
+          name: 'Server Inspur BMC SNMPv3'
+      groups:
+        -
+          name: csp-A
+      interfaces:
+        -
+          type: SNMP
+          ip: 192.52.140.109
+          port: '161'
+          details:
+            community: Bjsybjggfwq12#$
+          interface_ref: if1
+      inventory_mode: DISABLED
+    -
+      host: A-ybj-paas-csp-5_B0111-8U
+      name: A-ybj-paas-csp-5_B0111-8U
+      templates:
+        -
+          name: 'Server Inspur BMC SNMPv3'
+      groups:
+        -
+          name: csp-A
+      interfaces:
+        -
+          type: SNMP
+          ip: 192.52.140.110
+          port: '161'
+          details:
+            community: Bjsybjggfwq12#$
+          interface_ref: if1
+      inventory_mode: DISABLED
+    -
+      host: A-ybj-paas-csp-6_B0112-8U
+      name: A-ybj-paas-csp-6_B0112-8U
+      templates:
+        -
+          name: 'Server Inspur BMC SNMPv3'
+      groups:
+        -
+          name: csp-A
+      interfaces:
+        -
+          type: SNMP
+          ip: 192.52.140.111
+          port: '161'
+          details:
+            community: Bjsybjggfwq12#$
+          interface_ref: if1
+      inventory_mode: DISABLED
+    -
+      host: A-ybj-paas-csp-7_B0113-8U
+      name: A-ybj-paas-csp-7_B0113-8U
+      templates:
+        -
+          name: 'Server Inspur BMC SNMPv3'
+      groups:
+        -
+          name: csp-A
+      interfaces:
+        -
+          type: SNMP
+          ip: 192.52.140.112
+          port: '161'
+          details:
+            community: Bjsybjggfwq12#$
+          interface_ref: if1
+      inventory_mode: DISABLED
+    -
+      host: A-ybj-paas-tdsql-1_B0111-26U
+      name: A-ybj-paas-tdsql-1_B0111-26U
+      templates:
+        -
+          name: 'Server Inspur BMC SNMPv3'
+      groups:
+        -
+          name: tdsql-A
+      interfaces:
+        -
+          type: SNMP
+          ip: 192.52.140.113
+          port: '161'
+          details:
+            community: Bjsybjggfwq12#$
+          interface_ref: if1
+      inventory_mode: DISABLED
+    -
+      host: A-ybj-paas-tdsql-2_B0112-26U
+      name: A-ybj-paas-tdsql-2_B0112-26U
+      templates:
+        -
+          name: 'Server Inspur BMC SNMPv3'
+      groups:
+        -
+          name: tdsql-A
+      interfaces:
+        -
+          type: SNMP
+          ip: 192.52.140.114
+          port: '161'
+          details:
+            community: Bjsybjggfwq12#$
+          interface_ref: if1
+      inventory_mode: DISABLED
+    -
+      host: A-ybj-paas-tdsql-3_B0113-26U
+      name: A-ybj-paas-tdsql-3_B0113-26U
+      templates:
+        -
+          name: 'Server Inspur BMC SNMPv3'
+      groups:
+        -
+          name: tdsql-A
+      interfaces:
+        -
+          type: SNMP
+          ip: 192.52.140.115
+          port: '161'
+          details:
+            community: Bjsybjggfwq12#$
+          interface_ref: if1
+      inventory_mode: DISABLED
+    -
+      host: A-ybj-paas-tdsql-4_B0110-20U
+      name: A-ybj-paas-tdsql-4_B0110-20U
+      templates:
+        -
+          name: 'Server Inspur BMC SNMPv3'
+      groups:
+        -
+          name: tdsql-A
+      interfaces:
+        -
+          type: SNMP
+          ip: 192.52.140.116
+          port: '161'
+          details:
+            community: Bjsybjggfwq12#$
+          interface_ref: if1
+      inventory_mode: DISABLED
+    -
+      host: A-ybj-paas-tdsql-5_B0110-17U
+      name: A-ybj-paas-tdsql-5_B0110-17U
+      templates:
+        -
+          name: 'Server Inspur BMC SNMPv3'
+      groups:
+        -
+          name: tdsql-A
+      interfaces:
+        -
+          type: SNMP
+          ip: 192.52.140.117
+          port: '161'
+          details:
+            community: Bjsybjggfwq12#$
+          interface_ref: if1
+      inventory_mode: DISABLED
+    -
+      host: A-ybj-paas-tdsql-6_B0111-20U
+      name: A-ybj-paas-tdsql-6_B0111-20U
+      templates:
+        -
+          name: 'Server Inspur BMC SNMPv3'
+      groups:
+        -
+          name: tdsql-A
+      interfaces:
+        -
+          type: SNMP
+          ip: 192.52.140.118
+          port: '161'
+          details:
+            community: Bjsybjggfwq12#$
+          interface_ref: if1
+      inventory_mode: DISABLED
+    -
+      host: A-ybj-paas-tdsql-7_B0111-17U
+      name: A-ybj-paas-tdsql-7_B0111-17U
+      templates:
+        -
+          name: 'Server Inspur BMC SNMPv3'
+      groups:
+        -
+          name: tdsql-A
+      interfaces:
+        -
+          type: SNMP
+          ip: 192.52.140.119
+          port: '161'
+          details:
+            community: Bjsybjggfwq12#$
+          interface_ref: if1
+      inventory_mode: DISABLED
+    -
+      host: A-ybj-paas-tdsql-8_B0112-20U
+      name: A-ybj-paas-tdsql-8_B0112-20U
+      templates:
+        -
+          name: 'Server Inspur BMC SNMPv3'
+      groups:
+        -
+          name: tdsql-A
+      interfaces:
+        -
+          type: SNMP
+          ip: 192.52.140.120
+          port: '161'
+          details:
+            community: Bjsybjggfwq12#$
+          interface_ref: if1
+      inventory_mode: DISABLED
+    -
+      host: A-ybj-paas-tdsql-9_B0112-17U
+      name: A-ybj-paas-tdsql-9_B0112-17U
+      templates:
+        -
+          name: 'Server Inspur BMC SNMPv3'
+      groups:
+        -
+          name: tdsql-A
+      interfaces:
+        -
+          type: SNMP
+          ip: 192.52.140.121
+          port: '161'
+          details:
+            community: Bjsybjggfwq12#$
+          interface_ref: if1
+      inventory_mode: DISABLED
+    -
+      host: A-ybj-paas-tdsql-10_B0113-20U
+      name: A-ybj-paas-tdsql-10_B0113-20U
+      templates:
+        -
+          name: 'Server Inspur BMC SNMPv3'
+      groups:
+        -
+          name: tdsql-A
+      interfaces:
+        -
+          type: SNMP
+          ip: 192.52.140.122
+          port: '161'
+          details:
+            community: Bjsybjggfwq12#$
+          interface_ref: if1
+      inventory_mode: DISABLED
+    -
+      host: A-ybj-paas-tdsql-11_B0113-17U
+      name: A-ybj-paas-tdsql-11_B0113-17U
+      templates:
+        -
+          name: 'Server Inspur BMC SNMPv3'
+      groups:
+        -
+          name: tdsql-A
+      interfaces:
+        -
+          type: SNMP
+          ip: 192.52.140.123
+          port: '161'
+          details:
+            community: Bjsybjggfwq12#$
+          interface_ref: if1
+      inventory_mode: DISABLED
+    -
+      host: A-ybj-paas-tdsql-12_B0111-23U
+      name: A-ybj-paas-tdsql-12_B0111-23U
+      templates:
+        -
+          name: 'Server Inspur BMC SNMPv3'
+      groups:
+        -
+          name: tdsql-A
+      interfaces:
+        -
+          type: SNMP
+          ip: 192.52.140.124
+          port: '161'
+          details:
+            community: Bjsybjggfwq12#$
+          interface_ref: if1
+      inventory_mode: DISABLED
+    -
+      host: A-ybj-paas-tdsql-13_B0112-23U
+      name: A-ybj-paas-tdsql-13_B0112-23U
+      templates:
+        -
+          name: 'Server Inspur BMC SNMPv3'
+      groups:
+        -
+          name: tdsql-A
+      interfaces:
+        -
+          type: SNMP
+          ip: 192.52.140.125
+          port: '161'
+          details:
+            community: Bjsybjggfwq12#$
+          interface_ref: if1
+      inventory_mode: DISABLED
+    -
+      host: A-ybj-paas-tdsql-14_B0113-23U
+      name: A-ybj-paas-tdsql-14_B0113-23U
+      templates:
+        -
+          name: 'Server Inspur BMC SNMPv3'
+      groups:
+        -
+          name: tdsql-A
+      interfaces:
+        -
+          type: SNMP
+          ip: 192.52.140.126
+          port: '161'
+          details:
+            community: Bjsybjggfwq12#$
+          interface_ref: if1
+      inventory_mode: DISABLED
+    -
+      host: A-ybj-paas-redis-1_B0109-23U
+      name: A-ybj-paas-redis-1_B0109-23U
+      templates:
+        -
+          name: 'Server Inspur BMC SNMPv3'
+      groups:
+        -
+          name: redis-A
+      interfaces:
+        -
+          type: SNMP
+          ip: 192.52.140.127
+          port: '161'
+          details:
+            community: Bjsybjggfwq12#$
+          interface_ref: if1
+      inventory_mode: DISABLED
+    -
+      host: A-ybj-paas-redis-2_B0110-23U
+      name: A-ybj-paas-redis-2_B0110-23U
+      templates:
+        -
+          name: 'Server Inspur BMC SNMPv3'
+      groups:
+        -
+          name: redis-A
+      interfaces:
+        -
+          type: SNMP
+          ip: 192.52.140.128
+          port: '161'
+          details:
+            community: Bjsybjggfwq12#$
+          interface_ref: if1
+      inventory_mode: DISABLED
+    -
+      host: A-ybj-paas-redis-3_B0109-14U
+      name: A-ybj-paas-redis-3_B0109-14U
+      templates:
+        -
+          name: 'Server Inspur BMC SNMPv3'
+      groups:
+        -
+          name: redis-A
+      interfaces:
+        -
+          type: SNMP
+          ip: 192.52.140.129
+          port: '161'
+          details:
+            community: Bjsybjggfwq12#$
+          interface_ref: if1
+      inventory_mode: DISABLED
+    -
+      host: A-ybj-paas-redis-4_B0110-14U
+      name: A-ybj-paas-redis-4_B0110-14U
+      templates:
+        -
+          name: 'Server Inspur BMC SNMPv3'
+      groups:
+        -
+          name: redis-A
+      interfaces:
+        -
+          type: SNMP
+          ip: 192.52.140.130
+          port: '161'
+          details:
+            community: Bjsybjggfwq12#$
+          interface_ref: if1
+      inventory_mode: DISABLED
+    -
+      host: A-ybj-paas-redis-5_B0111-14U
+      name: A-ybj-paas-redis-5_B0111-14U
+      templates:
+        -
+          name: 'Server Inspur BMC SNMPv3'
+      groups:
+        -
+          name: redis-A
+      interfaces:
+        -
+          type: SNMP
+          ip: 192.52.140.131
+          port: '161'
+          details:
+            community: Bjsybjggfwq12#$
+          interface_ref: if1
+      inventory_mode: DISABLED
+    -
+      host: A-ybj-paas-redis-6_B0112-14U
+      name: A-ybj-paas-redis-6_B0112-14U
+      templates:
+        -
+          name: 'Server Inspur BMC SNMPv3'
+      groups:
+        -
+          name: redis-A
+      interfaces:
+        -
+          type: SNMP
+          ip: 192.52.140.132
+          port: '161'
+          details:
+            community: Bjsybjggfwq12#$
+          interface_ref: if1
+      inventory_mode: DISABLED
+    -
+      host: A-ybj-paas-redis-7_B0113-14U
+      name: A-ybj-paas-redis-7_B0113-14U
+      templates:
+        -
+          name: 'Server Inspur BMC SNMPv3'
+      groups:
+        -
+          name: redis-A
+      interfaces:
+        -
+          type: SNMP
+          ip: 192.52.140.129
+          port: '161'
+          details:
+            community: Bjsybjggfwq12#$
+          interface_ref: if1
+      inventory_mode: DISABLED
+    -
+      host: A-ybj-paas-dbbridge_B0109-20U
+      name: A-ybj-paas-dbbridge_B0109-20U
+      templates:
+        -
+          name: 'Server Inspur BMC SNMPv3'
+      groups:
+        -
+          name: dbbridge-A
+      interfaces:
+        -
+          type: SNMP
+          ip: 192.52.140.130
+          port: '161'
+          details:
+            community: Bjsybjggfwq12#$
+          interface_ref: if1
+      inventory_mode: DISABLED
